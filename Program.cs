@@ -22,11 +22,14 @@ app.UseSession();
 
 app.MapGet("/users/", Users.Get);
 app.MapPost("/users/", Users.Post);
-app.MapDelete("/db", reset_DB_to_default);
 app.MapGet("/users/{id}", Users.GetById);
 
 app.MapPost("/login/", Login.Post);
 app.MapGet("/login/", Login.Get);
+
+app.MapGet("/hotels", Hotels.Get);
+
+app.MapDelete("/db", reset_DB_to_default);
 
 app.Run();
 
