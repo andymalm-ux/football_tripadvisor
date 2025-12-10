@@ -24,7 +24,7 @@ async Task reset_DB_to_default(Config config)
     string create_table_users = """
         CREATE TABLE users
         (
-        id INT PRIMARY KEY AUTO_INCREMENT,
+        id BINARY(16) PRIMARY KEY DEFAULT(UUID_TO_BIN(UUID())),
         email VARCHAR(264),
         password VARCHAR(64)
         );
@@ -32,4 +32,6 @@ async Task reset_DB_to_default(Config config)
 
     await MySqlHelper.ExecuteNonQueryAsync(config.DB, "DROP TABLE IF EXISTS users");
     await MySqlHelper.ExecuteNonQueryAsync(config.DB, create_table_users);
+    var a = "SELECT BIN_TO_UUID(id) FROM users WHERE+öä-lkj ¨trewq VB ¨
+    Åä+p0";
 }
