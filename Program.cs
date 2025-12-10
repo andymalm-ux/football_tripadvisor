@@ -66,12 +66,32 @@ async Task reset_DB_to_default(Config config)
         city_id INT,
         FOREIGN KEY (city_id) REFERENCES cities (id)
         );
+
+        CREATE TABLE attraction_types
+        (
+        id INT PRIMARY KEY AUTO_INCREMENT,
+        name VARCHAR(100) NOT NULL
+        );
+
+        CREATE TABLE tourist_attractions
+        (
+        id INT PRIMARY KEY AUTO_INCREMENT,
+        name VARCHAR(100) NOT NULL,
+        type_id INT NOT NULL,
+        address VARCHAR(100) NOT NULL,
+        city_id INT,
+        FOREIGN KEY (type_id) REFERENCES attraction_types (id),
+        FOREIGN KEY (city_id) REFERENCES cities (id)
+        );
+
         """;
 
     await MySqlHelper.ExecuteNonQueryAsync(config.DB, "DROP TABLE IF EXISTS users");
+    await MySqlHelper.ExecuteNonQueryAsync(config.DB, "DROP TABLE IF EXISTS hotels");
     await MySqlHelper.ExecuteNonQueryAsync(config.DB, "DROP TABLE IF EXISTS cities");
     await MySqlHelper.ExecuteNonQueryAsync(config.DB, "DROP TABLE IF EXISTS countries");
-    await MySqlHelper.ExecuteNonQueryAsync(config.DB, "DROP TABLE IF EXISTS hotels");
+    await MySqlHelper.ExecuteNonQueryAsync(config.DB, "DROP TABLE IF EXISTS attraction_types");
+    await MySqlHelper.ExecuteNonQueryAsync(config.DB, "DROP TABLE IF EXISTS tourist_attractions");
     await MySqlHelper.ExecuteNonQueryAsync(config.DB, create_tables);
 
     string insert_data = """
