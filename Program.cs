@@ -59,7 +59,33 @@ async Task reset_DB_to_default(Config config)
     await MySqlHelper.ExecuteNonQueryAsync(config.DB, "DROP TABLE IF EXISTS countries");
     await MySqlHelper.ExecuteNonQueryAsync(config.DB, "DROP TABLE IF EXISTS hotels");
     await MySqlHelper.ExecuteNonQueryAsync(config.DB, create_tables);
-    //     await MySqlHelper.ExecuteNonQueryAsync(config.DB, create_table_cities);
-    //     await MySqlHelper.ExecuteNonQueryAsync(config.DB, create_table_countries);
-    //     await MySqlHelper.ExecuteNonQueryAsync(config.DB, create_table_hotels);
+
+    string insert_data = """
+        INSERT INTO countries (name) VALUES
+        ('Spain'),
+        ('England'),
+        ('Italy'),
+        ('Germany'),
+        ('France');
+
+        INSERT INTO cities (name, country_id) VALUES
+        ('Barcelona', 1),
+        ('Madrid', 1),
+        ('Sevilla', 1),
+        ('Valencia', 1),
+        ('London', 2),
+        ('Manchester', 2),
+        ('Liverpool', 2),
+        ('Newcastle', 2),
+        ('Milan', 3),
+        ('Rome', 3),
+        ('Naples', 3),
+        ('Munich', 4),
+        ('Dortmund', 4),
+        ('Berlin', 4),
+        ('Paris', 5),
+        ('Marseille', 5);
+        """;
+
+    await MySqlHelper.ExecuteNonQueryAsync(config.DB, insert_data);
 }
