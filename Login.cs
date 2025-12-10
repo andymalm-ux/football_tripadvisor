@@ -5,33 +5,31 @@ namespace Server;
 
 static class Login
 {
-    public record Get_Data(string Name, String Email);
+    public record Get_Data(string Email);
 
     public static async Task<Get_Data?> Get(Config config, HttpContext context)
     {
         Get_Data? result = null;
-        if(context.Session.IsAvailable)
+        if (context.Session.IsAvailable)
         {
-            if(context.Session.Keys.Contains("user_id"))
+            if (context.Session.Keys.Contains("user_id"))
             {
-             string query = "SELECT email FROM users WHERE id = @id";
-             var parameters = new MySqlParameter[]
+                string query = "SELECT email FROM users WHERE id = @id";
+                var parameters = new MySqlParameter[]
                 {
-                    new("@id", context.Session.GetInt32("user_id"))
-                };  
+                    new("@id", context.Session.GetInt32("user_id")),
+                };
 
-                using(var reader = await MySqlHelper.ExecuteReaderAsync(config.DB, query, parameters))
+                using (
+                    var reader = await MySqlHelper.ExecuteReaderAsync(config.DB, query, parameters)
+                )
                 {
-                    if(reader.Read())
+                    if (reader.Read())
                     {
-                        if(reader[0] is string email)
-                        {
-                            result = new(email, reader.GetString(1));
-                        }
+                        result = new(reader.GetString(0));
                     }
-                } 
+                }
             }
-
         }
         return result;
     }
@@ -47,10 +45,10 @@ static class Login
             new("@email", credentials.Email),
             new("@password", credentials.Password),
         };
-        
+
         object query_result = await MySqlHelper.ExecuteScalarAsync(config.DB, query, parameters);
 
-        if(query_result is int id)
+        if (query_result is int id)
         {
             context.Session.SetInt32("user_id", id);
             result = true;
