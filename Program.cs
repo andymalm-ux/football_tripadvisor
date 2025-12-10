@@ -1,8 +1,17 @@
 using System.Xml;
+using Google.Protobuf.WellKnownTypes;
+using Microsoft.Extensions.Options;
 using MySql.Data.MySqlClient;
 using Server;
 
 var builder = WebApplication.CreateBuilder(args);
+
+builder.Services.AddDistributedMemoryCache();
+builder.Services.AddSession(options =>
+{
+    options.Cookie.HttpOnly = true;
+    options.Cookie.IsEssential = true;
+});
 
 Config config = new(
     "server = 127.0.0.1;uid=football_tripadvisor;pwd=football_tripadvisor;database=football_tripadvisor"
@@ -12,10 +21,15 @@ builder.Services.AddSingleton<Config>(config);
 
 var app = builder.Build();
 
+app.UseSession();
+
 app.MapGet("/users/", Users.Get);
 app.MapPost("/users/", Users.Post);
 app.MapDelete("/db", reset_DB_to_default);
 app.MapGet("/users/{id}", Users.GetById);
+
+app.MapPost("/login/", Login.Post);
+app.MapGet("/login/", Login.Get);
 
 app.Run();
 
