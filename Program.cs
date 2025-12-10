@@ -25,7 +25,7 @@ app.UseSession();
 
 app.MapGet("/users/", Users.Get);
 app.MapPost("/users/", Users.Post);
-app.MapDelete("/users/", reset_DB_to_default);
+app.MapDelete("/db", reset_DB_to_default);
 app.MapGet("/users/{id}", Users.GetById);
 
 app.MapPost("/login/", Login.Post);
@@ -35,15 +35,45 @@ app.Run();
 
 async Task reset_DB_to_default(Config config)
 {
-    string create_table_users = """
+    string create_tables = """
+
         CREATE TABLE users
         (
         id INT PRIMARY KEY AUTO_INCREMENT,
         email VARCHAR(264),
         password VARCHAR(64)
         );
+
+        CREATE TABLE countries
+        (
+        id INT PRIMARY KEY AUTO_INCREMENT,
+        name VARCHAR (50)
+        );
+
+        CREATE TABLE cities
+        (
+        id INT PRIMARY KEY AUTO_INCREMENT,
+        name VARCHAR (50),
+        country_id INT,
+        FOREIGN KEY (country_id) REFERENCES countries (id)
+        );
+
+        CREATE TABLE hotels
+        (
+        id INT PRIMARY KEY AUTO_INCREMENT,
+        name VARCHAR(100) NOT NULL,
+        address VARCHAR(100) NOT NULL,
+        city_id INT,
+        FOREIGN KEY (city_id) REFERENCES cities (id)
+        );
         """;
 
     await MySqlHelper.ExecuteNonQueryAsync(config.DB, "DROP TABLE IF EXISTS users");
-    await MySqlHelper.ExecuteNonQueryAsync(config.DB, create_table_users);
+    await MySqlHelper.ExecuteNonQueryAsync(config.DB, "DROP TABLE IF EXISTS cities");
+    await MySqlHelper.ExecuteNonQueryAsync(config.DB, "DROP TABLE IF EXISTS countries");
+    await MySqlHelper.ExecuteNonQueryAsync(config.DB, "DROP TABLE IF EXISTS hotels");
+    await MySqlHelper.ExecuteNonQueryAsync(config.DB, create_tables);
+    //     await MySqlHelper.ExecuteNonQueryAsync(config.DB, create_table_cities);
+    //     await MySqlHelper.ExecuteNonQueryAsync(config.DB, create_table_countries);
+    //     await MySqlHelper.ExecuteNonQueryAsync(config.DB, create_table_hotels);
 }
