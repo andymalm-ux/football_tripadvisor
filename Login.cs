@@ -1,4 +1,5 @@
 using MySql.Data.MySqlClient;
+using Org.BouncyCastle.Bcpg.Sig;
 
 namespace Server;
 
@@ -6,21 +7,54 @@ static class Login
 {
     public record Get_Data(string Name, String Email);
 
-    public static async Task<Get_Data> Get(Config config, HttpContext context)
+    public static async Task<Get_Data?> Get(Config config, HttpContext context)
     {
-        Get_Data result = null;
-        if (context.Session.GetString("user_id") is string user_id)
+        Get_Data? result = null;
+        if(context.Session.IsAvailable)
         {
-            string query = "SELECT email FROM users WHERE id = UUID_TO_BIN(@id)";
-            var parameters = new MySqlParameter[] { new("@id", user_id) };
+            if(context.Session.Keys.Contains("user_id"))
+            {
+             string query = "SELECT email FROM users WHERE id = @id";
+             var parameters = new MySqlParameter[]
+                {
+                    new("@id", context.Session.GetInt32("user_id"))
+                };  
+
+                using(var reader = await MySqlHelper.ExecuteReaderAsync(config.DB, query, parameters))
+                {
+                    if(reader.Read())
+                    {
+                        if(reader[0] is string email)
+                        {
+                            result = new(email, reader.GetString(1));
+                        }
+                    }
+                } 
+            }
+
         }
+        return result;
     }
 
-    public static async Task<bool> Post(Post_Args credentials, Config config, HttpContext ctx)
+    public record Post_Args(string Email, string Password);
+
+    public static async Task<bool> Post(Post_Args credentials, Config config, HttpContext context)
     {
-        string query =
-            "SELECT BIN_TO_UUID(id) FROM users WHERE email = @email AND password = @password";
-        string? user_id = await MySqlHelper.ExecuteScalarAsync(config.DB, query, parameters);
-        ctx.Session.SetString("user_id", user_id);
+        bool result = false;
+        string query = "SELECT id FROM users WHERE email = @email AND password = @password";
+        var parameters = new MySqlParameter[]
+        {
+            new("@email", credentials.Email),
+            new("@password", credentials.Password),
+        };
+        
+        object query_result = await MySqlHelper.ExecuteScalarAsync(config.DB, query, parameters);
+
+        if(query_result is int id)
+        {
+            context.Session.SetInt32("user_id", id);
+            result = true;
+        }
+        return result;
     }
 }

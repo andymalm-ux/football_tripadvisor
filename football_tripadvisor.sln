@@ -1,0 +1,24 @@
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.5.2.0
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "football_tripadvisor", "football_tripadvisor.csproj", "{59CE1070-8914-1FA1-07E8-926FFAA0DB98}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{59CE1070-8914-1FA1-07E8-926FFAA0DB98}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{59CE1070-8914-1FA1-07E8-926FFAA0DB98}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{59CE1070-8914-1FA1-07E8-926FFAA0DB98}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{59CE1070-8914-1FA1-07E8-926FFAA0DB98}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {F75BE4C4-2529-4079-8ABF-8BD5EB8D74EA}
+	EndGlobalSection
+EndGlobal
