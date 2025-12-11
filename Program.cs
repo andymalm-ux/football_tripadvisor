@@ -226,7 +226,11 @@ async Task reset_DB_to_default(Config config)
         INSERT INTO hotels (name, address, city_id) VALUES
         ('B&B HOTEL Marseille Prado Parc des Expositions', '192 Avenue Pierre Mendès France', 16),
         ('RockyPop Marseille Hôtel', '4 Boulevard Charles Livon', 16),
-        ('Comfort Aparthotel Marseille Prado', '23 Rue du Rouet', 16);       
+        ('Comfort Aparthotel Marseille Prado', '23 Rue du Rouet', 16);
+
+        INSERT INTO attraction_types (name) VALUES
+        ('Stadium'),
+        ('Pub');     
         """;
 
     await MySqlHelper.ExecuteNonQueryAsync(config.DB, insert_data);
