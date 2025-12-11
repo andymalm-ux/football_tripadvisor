@@ -88,10 +88,10 @@ async Task reset_DB_to_default(Config config)
 
     await MySqlHelper.ExecuteNonQueryAsync(config.DB, "DROP TABLE IF EXISTS users");
     await MySqlHelper.ExecuteNonQueryAsync(config.DB, "DROP TABLE IF EXISTS hotels");
+    await MySqlHelper.ExecuteNonQueryAsync(config.DB, "DROP TABLE IF EXISTS tourist_attractions");
+    await MySqlHelper.ExecuteNonQueryAsync(config.DB, "DROP TABLE IF EXISTS attraction_types");
     await MySqlHelper.ExecuteNonQueryAsync(config.DB, "DROP TABLE IF EXISTS cities");
     await MySqlHelper.ExecuteNonQueryAsync(config.DB, "DROP TABLE IF EXISTS countries");
-    await MySqlHelper.ExecuteNonQueryAsync(config.DB, "DROP TABLE IF EXISTS attraction_types");
-    await MySqlHelper.ExecuteNonQueryAsync(config.DB, "DROP TABLE IF EXISTS tourist_attractions");
     await MySqlHelper.ExecuteNonQueryAsync(config.DB, create_tables);
 
     string insert_data = """
