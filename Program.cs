@@ -29,6 +29,7 @@ app.MapGet("/login/", Login.Get);
 
 app.MapGet("/hotels", Hotels.Get);
 app.MapPost("/search", Hotels.SearchByCity);
+app.MapGet("/hotels/search", Hotels.Search);
 app.MapDelete("/db", reset_DB_to_default);
 
 app.Run();
