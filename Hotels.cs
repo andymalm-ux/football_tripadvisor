@@ -32,4 +32,40 @@ static class Hotels
 
         return result;
     }
+
+    public static async Task<IResult> Search(Config config, HttpRequest req)
+    {
+        List<Get_Data> result = new();
+        string? city = req.Query["city"];
+
+        string query = """
+            SELECT hotel.name, hotel.address, city.name, country.name
+            FROM hotels AS hotel
+            JOIN cities AS city ON hotel.city_id = city.id
+            JOIN countries AS country ON city.country_id = country.id
+            WHERE city.name = @city_name;
+            """;
+
+        var parameters = new MySqlParameter[] { new("@city_name", city) };
+
+        using (var reader = await MySqlHelper.ExecuteReaderAsync(config.DB, query, parameters))
+        {
+            while (reader.Read())
+            {
+                result.Add(
+                    new Get_Data(
+                        reader.GetString(0),
+                        reader.GetString(1),
+                        reader.GetString(2),
+                        reader.GetString(3)
+                    )
+                );
+            }
+            if (result.Count == 0)
+            {
+                return Results.NotFound(new { message = $"No hotels found in {city}" });
+            }
+        }
+        return Results.Ok(result);
+    }
 }
