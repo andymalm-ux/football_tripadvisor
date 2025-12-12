@@ -1,4 +1,5 @@
 DROP TABLE IF EXISTS users;
+DROP TABLE IF EXISTS hotel_attraction_distance;
 DROP TABLE IF EXISTS hotels;
 DROP TABLE IF EXISTS tourist_attractions;
 DROP TABLE IF EXISTS attraction_types;
@@ -50,4 +51,13 @@ CREATE TABLE tourist_attractions
     city_id INT NOT NULL,
     FOREIGN KEY (type_id) REFERENCES attraction_types (id),
     FOREIGN KEY (city_id) REFERENCES cities (id)
+
+    CREATE TABLE hotel_attraction_distance
+    (
+        hotel_id INT,
+        attraction_id INT,
+        distance_km DECIMAL,
+        FOREIGN KEY (hotel_id) REFERENCES hotels (id),
+        FOREIGN KEY (attraction_id) REFERENCES tourist_attractions (id)
+    )
 );
