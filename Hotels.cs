@@ -9,10 +9,15 @@ static class Hotels
         List<Get_Data> result = new();
 
         string query = """
-            SELECT hotel.name, hotel.address, city.name, country.name
+            SELECT 
+            hotel.name,
+            hotel.address, 
+            city.name, 
+            country.name
             FROM hotels AS hotel
             JOIN cities AS city ON hotel.city_id = city.id
-            JOIN countries AS country ON city.country_id = country.id;
+            JOIN countries AS country ON city.country_id = country.id
+            LEFT JOIN rooms AS room ON hotel.id = room.hotel_id;
             """;
 
         using (var reader = await MySqlHelper.ExecuteReaderAsync(config.DB, query))
