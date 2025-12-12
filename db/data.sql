@@ -233,3 +233,6 @@ INSERT INTO tourist_attractions (name, type_id, address, city_id) VALUES
 ('The Shamrock Irish Pub', 2, 'Stade Vélodrome Parvis Norte', 16),
 ('Bar Le Marseillais', 2, '1 Rue Fort du Sanctuaire', 16),
 ('OBradys Irish Pub', 2, '378 Avenue de Mazargues', 16);
+
+-- INSERT INTO hotel_attraction_distance (hotel_id, attraction_id, distance) VALUES
+-- ()
