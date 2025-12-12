@@ -29,6 +29,8 @@ app.MapGet("/login/", Login.Get);
 
 app.MapGet("/hotels", Hotels.Get);
 app.MapGet("/search", Hotels.Search);
+app.MapGet("/attractions", Attractions.Get);
+
 app.MapDelete("/db", reset_DB_to_default);
 
 app.Run();
