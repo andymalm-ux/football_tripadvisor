@@ -1,4 +1,6 @@
 DROP TABLE IF EXISTS users;
+DROP TABLE IF EXISTS amenities_hotel;
+DROP TABLE IF EXISTS amenities;
 DROP TABLE IF EXISTS hotels;
 DROP TABLE IF EXISTS tourist_attractions;
 DROP TABLE IF EXISTS attraction_types;
@@ -55,9 +57,7 @@ CREATE TABLE tourist_attractions
 CREATE TABLE amenities 
 (
     id INT PRIMARY KEY AUTO_INCREMENT,
-    name ENUM ('Wi-fi', 'Pool', 'Breakfast') NOT NULL,
-    hotel_id INT NOT NULL,
-    FOREIGN KEY(hotel_id) REFERENCES hotels(id)
+    name ENUM ('Wi-fi', 'Pool', 'Breakfast') NOT NULL
 );
 
 CREATE TABLE amenities_hotel
