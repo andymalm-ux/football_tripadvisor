@@ -4,7 +4,7 @@ static class Attractions
 {
     public record Get_Data(string Type, string Name, string Address, string City);
 
-    public static async Task<List<Get_Data>> Get(Config config)
+    public static async Task<IResult> Get(Config config)
     {
         List<Get_Data> result = new();
 
@@ -28,8 +28,12 @@ static class Attractions
                     )
                 );
             }
+            if (result.Count == 0)
+            {
+                return Results.NotFound(new { message = "No attraction found" });
+            }
         }
 
-        return result;
+        return Results.Ok(result);
     }
 }
