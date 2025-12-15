@@ -51,6 +51,7 @@ static class Login
             context.Session.SetInt32("user_id", id);
             return Results.Ok("Login ok");
         }
-        return Results.Unauthorized();
+        return Results.Text("Fel epost eller lösenord", statusCode: StatusCodes.Status401Unauthorized
+        );
     }
 }
