@@ -28,6 +28,8 @@ app.MapPost("/login/", Login.Post);
 app.MapGet("/login/", Login.Get);
 
 app.MapGet("/hotels", Hotels.Get);
+app.MapGet("/hotels/{id}", Hotels.GetHotelById);
+
 app.MapGet("/search", Hotels.Search);
 app.MapGet("/attractions", Attractions.Get);
 
