@@ -42,6 +42,7 @@ async Task reset_DB_to_default(Config config)
         id INT PRIMARY KEY AUTO_INCREMENT,
         email VARCHAR(264),
         password VARCHAR(64)
+        role ENUM('user', 'admin') NOT NULL DEFAULT 'user'
         );
 
         CREATE TABLE countries

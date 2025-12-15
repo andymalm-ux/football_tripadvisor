@@ -36,7 +36,7 @@ static class Login
 
     public record Post_Args(string Email, string Password);
 
-    public static async Task<bool> Post(Post_Args credentials, Config config, HttpContext context)
+    public static async Task<(bool, string Message)> Post(Post_Args credentials, Config config, HttpContext context)
     {
         bool result = false;
         string query = "SELECT id FROM users WHERE email = @email AND password = @password";
@@ -51,8 +51,11 @@ static class Login
         if (query_result is int id)
         {
             context.Session.SetInt32("user_id", id);
-            result = true;
+            return (true, "user login ok");
         }
-        return result;
+        else
+        {   
+            return (false, "login failed");
+        }
     }
 }
