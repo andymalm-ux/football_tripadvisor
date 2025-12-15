@@ -565,3 +565,6 @@ INSERT INTO rooms (hotel_id, name, capacity, price_per_night) VALUES
 (55, 'Superior Room 5502', 2, 1250),
 (55, 'Deluxe Room 5503', 2, 1450),
 (55, 'Premium Room 5504', 2, 1650);
+
+-- INSERT INTO hotel_attraction_distance (hotel_id, attraction_id, distance_km) VALUES
+-- ("");
