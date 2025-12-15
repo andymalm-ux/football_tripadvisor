@@ -1,3 +1,5 @@
+using MySqlX.XDevAPI.Common;
+
 namespace Server;
 
 static class Login
@@ -33,9 +35,8 @@ static class Login
 
     public record Post_Args(string Email, string Password);
 
-    public static async Task<(bool, string message)> Post(Post_Args credentials, Config config, HttpContext context)
+    public static async Task<IResult> Post(Post_Args credentials, Config config, HttpContext context)
     {
-        bool result = false;
         string query = "SELECT id FROM users WHERE email = @email AND password = @password";
         var parameters = new MySqlParameter[]
         {
@@ -48,8 +49,8 @@ static class Login
         if (query_result is int id)
         {
             context.Session.SetInt32("user_id", id);
-            return (true, "Login ok");
+            return Results.Ok("Login ok");
         }
-        return (false, "Login failed");
+        return Results.Unauthorized();
     }
 }
