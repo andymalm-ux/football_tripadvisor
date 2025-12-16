@@ -1,3 +1,6 @@
+INSERT INTO users (email, password) VALUES
+('admin', '1234');
+
 INSERT INTO countries (name) VALUES
 ('Spain'),
 ('England'),
@@ -379,6 +382,141 @@ INSERT INTO hotel_attraction_distance (hotel_id, attraction_id, distance_km) VAL
 (55, 67, 0.6);
 
 -- Hotel rooms:
+-- Amenities:
+INSERT INTO amenities (name) VALUES
+('Wi-fi'),
+('Pool'),
+('Breakfast'); 
+
+-- (1) Hotel Alguer Camp Nou
+INSERT INTO amenities_hotel (hotel_id, amenity_id) 
+VALUES (1,1),(1,3);
+-- (2) Onefam Les Corts
+INSERT INTO amenities_hotel (hotel_id, amenity_id) 
+VALUES (2,1),(2,2),(2,3);
+-- (3) NH Barcelona Stadium
+INSERT INTO amenities_hotel (hotel_id, amenity_id) 
+VALUES (3,1),(3,3);
+-- (4) Arya Stadium Hotel
+INSERT INTO amenities_hotel (hotel_id, amenity_id) 
+VALUES (4,1);
+-- (5) H10 Tribeca
+INSERT INTO amenities_hotel (hotel_id, amenity_id) 
+VALUES (5,1),(5,3);
+-- (6) Melia Castilla
+INSERT INTO amenities_hotel (hotel_id, amenity_id) 
+VALUES (6,1),(6,2),(6,3);
+-- (7) NH Paseo de la Habana
+INSERT INTO amenities_hotel (hotel_id, amenity_id) 
+VALUES (7,1),(7,3);
+-- (8) NYX Hotel Madrid
+INSERT INTO amenities_hotel (hotel_id, amenity_id) 
+VALUES (8,1);
+-- (9) Novotel Sevilla
+INSERT INTO amenities_hotel (hotel_id, amenity_id) 
+VALUES (9,1),(9,3);
+-- (10) Meliá Lebreros
+INSERT INTO amenities_hotel (hotel_id, amenity_id) 
+VALUES (10,1),(10,2),(10,3);
+-- (11) Only YOU Hotel
+INSERT INTO amenities_hotel (hotel_id, amenity_id) 
+VALUES (11,1);
+-- (12) Hotel Giralda Center
+INSERT INTO amenities_hotel (hotel_id, amenity_id) 
+VALUES (12,1),(12,2);
+-- (13) Silken Puerta Valencia
+INSERT INTO amenities_hotel (hotel_id, amenity_id) 
+VALUES (13,1),(13,3);
+-- (14) SH Valencia Palace
+INSERT INTO amenities_hotel (hotel_id, amenity_id) 
+VALUES (14,1),(14,2),(14,3);
+-- (17) Maldron Hotel Finsbury Park London
+INSERT INTO amenities_hotel (hotel_id, amenity_id) 
+VALUES (17,1),(17,3);
+-- (18) The Bull & Last
+INSERT INTO amenities_hotel (hotel_id, amenity_id) 
+VALUES (18,1),(18,2),(18,3);
+-- (19) The Wesley Camden Town
+INSERT INTO amenities_hotel (hotel_id, amenity_id) 
+VALUES (19,1),(19,3);
+-- (20) The Luxury Inn
+INSERT INTO amenities_hotel (hotel_id, amenity_id) 
+VALUES (20,1),(20,2);
+-- (21) Hotel Football Old Trafford
+INSERT INTO amenities_hotel (hotel_id, amenity_id) 
+VALUES (21,1),(21,3);
+-- (22) Hilton Garden Inn Manchester Emirates Old Trafford
+INSERT INTO amenities_hotel (hotel_id, amenity_id) 
+VALUES (22,1),(22,2),(22,3);
+-- (23) Trafford Hall Hotel Manchester
+INSERT INTO amenities_hotel (hotel_id, amenity_id) 
+VALUES (23,1),(23,3);
+-- (24) Holiday Inn Express Manchester
+INSERT INTO amenities_hotel (hotel_id, amenity_id) 
+VALUES (24,1),(24,2);
+-- (25) Hotel Tia
+INSERT INTO amenities_hotel (hotel_id, amenity_id) 
+VALUES (25,1),(25,3);
+-- (26) Hotel Anfield
+INSERT INTO amenities_hotel (hotel_id, amenity_id) 
+VALUES (26,1),(26,2),(26,3);
+-- (28) Sandman Signature Newcastle Hotel
+INSERT INTO amenities_hotel (hotel_id, amenity_id) 
+VALUES (28,1),(28,3);
+-- (29) Maldron Hotel Newcastle
+INSERT INTO amenities_hotel (hotel_id, amenity_id) 
+VALUES (29,1),(29,3);
+-- (30) Royal Station Hotel
+INSERT INTO amenities_hotel (hotel_id, amenity_id) 
+VALUES (30,1),(30,3);
+-- (31) The County Hotel Newcastle
+INSERT INTO amenities_hotel (hotel_id, amenity_id) 
+VALUES (31,1),(31,3);
+-- (36) FAIROME Guest House
+INSERT INTO amenities_hotel (hotel_id, amenity_id) 
+VALUES (36,1),(36,2),(36,3);
+-- (37) Suite Pinturicchio
+INSERT INTO amenities_hotel (hotel_id, amenity_id) 
+VALUES (37,1),(37,3);
+-- (38) Palazzo Esedra
+INSERT INTO amenities_hotel (hotel_id, amenity_id) 
+VALUES (38,1),(38,3);
+-- (39) LHP Napoli Palace & SPA
+INSERT INTO amenities_hotel (hotel_id, amenity_id) 
+VALUES (39,1),(39,2),(39,3);
+-- (40) Hotel Leopardi
+INSERT INTO amenities_hotel (hotel_id, amenity_id) 
+VALUES (40,1),(40,3);
+-- (41) Hampton by Hilton Munich City North
+INSERT INTO amenities_hotel (hotel_id, amenity_id) 
+VALUES (41,1);
+-- (42) B&B Hotel München City-Nord
+INSERT INTO amenities_hotel (hotel_id, amenity_id) 
+VALUES (42,1),(42,2),(42,3);
+-- (43) AMERON München Motorworld
+INSERT INTO amenities_hotel (hotel_id, amenity_id) 
+VALUES (43,1),(43,3);
+-- (45) Dorint An den Westfalenhallen Dortmund
+INSERT INTO amenities_hotel (hotel_id, amenity_id) 
+VALUES (45,1),(45,2),(45,3);
+-- (47) Hotel Brandies Berlin
+INSERT INTO amenities_hotel (hotel_id, amenity_id) 
+VALUES (47,1),(47,3);
+-- (48) Hotel Rotdorn
+INSERT INTO amenities_hotel (hotel_id, amenity_id) 
+VALUES (48,1),(48,2),(48,3);
+-- (51) Hotel De Paris Boulogne
+INSERT INTO amenities_hotel (hotel_id, amenity_id) 
+VALUES (51,1),(51,2),(51,3);
+-- (52) Mercure Paris Boulogne
+INSERT INTO amenities_hotel (hotel_id, amenity_id) 
+VALUES (52,1);
+-- (54) RockyPop Marseille Hôtel
+INSERT INTO amenities_hotel (hotel_id, amenity_id) 
+VALUES (54,1),(54,2),(54,3);
+-- (55) Comfort Aparthotel Marseille Prado
+INSERT INTO amenities_hotel (hotel_id, amenity_id) 
+VALUES (55,1),(55,3);
 
 INSERT INTO rooms (hotel_id, name, capacity, price_per_night) VALUES
 -- Hotel 1
