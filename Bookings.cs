@@ -22,6 +22,13 @@ static class Bookings
                 );
             }
 
+            if (credentials.CheckIn < DateTime.Now)
+            {
+                return Results.Json(
+                    new { message = "You must add a check in date that is today or later." },
+                    statusCode: 400
+                );
+            }
             if (credentials.NumberOfGuests <= 0)
             {
                 return Results.Json(
