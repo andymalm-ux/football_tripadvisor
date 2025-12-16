@@ -1,12 +1,14 @@
+DROP TABLE IF EXISTS amenities_hotel;
 DROP TABLE IF EXISTS booking_details;
+DROP TABLE IF EXISTS bookings;
 DROP TABLE IF EXISTS rooms;
-DROP TABLE IF EXISTS hotels;
+DROP TABLE IF EXISTS amenities;
 DROP TABLE IF EXISTS tourist_attractions;
+DROP TABLE IF EXISTS hotels;
 DROP TABLE IF EXISTS attraction_types;
+DROP TABLE IF EXISTS users;
 DROP TABLE IF EXISTS cities;
 DROP TABLE IF EXISTS countries;
-DROP TABLE IF EXISTS bookings;
-DROP TABLE IF EXISTS users;
 
 CREATE TABLE users
 (
@@ -65,6 +67,20 @@ CREATE TABLE tourist_attractions
     FOREIGN KEY (city_id) REFERENCES cities (id)
 );
 
+CREATE TABLE amenities 
+(
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    name ENUM ('Wi-fi', 'Pool', 'Breakfast') NOT NULL
+);
+
+CREATE TABLE amenities_hotel
+(
+    hotel_id INT NOT NULL,
+    amenity_id INT NOT NULL,
+    PRIMARY KEY(hotel_id, amenity_id),
+    FOREIGN KEY(hotel_id) REFERENCES hotels(id),
+    FOREIGN KEY(amenity_id) REFERENCES amenities(id)
+);
 CREATE TABLE bookings
 (
     id INT PRIMARY KEY AUTO_INCREMENT,
