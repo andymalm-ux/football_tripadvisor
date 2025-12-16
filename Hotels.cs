@@ -104,7 +104,7 @@ static class Hotels
             JOIN hotel_attraction_distance AS had ON ta.id = had.attraction_id
             JOIN hotels AS h ON h.id = had.hotel_id
             JOIN attraction_types AS at ON at.id = ta.type_id
-            WHERE h.id = 1;
+            WHERE h.id = @hotel_id;
             """;
 
         await using var attractionReader = await MySqlHelper.ExecuteReaderAsync(
