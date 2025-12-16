@@ -53,8 +53,8 @@ static class Hotels
         string query = """
             SELECT 
             hotel.name, 
-            COUNT(room.id) AS number_of_rooms,
-            GROUP_CONCAT(DISTINCT a.name SEPARATOR ', ') AS amenities,
+            COUNT(DISTINCT room.id) AS number_of_rooms,
+            IFNULL(GROUP_CONCAT(DISTINCT a.name SEPARATOR ', '), "No amenities") AS amenities,
             hotel.address, 
             city.name, 
             country.name 
@@ -91,11 +91,11 @@ static class Hotels
         }
     }
 
-    public record RoomData(int Id, string Name, int Capacity, decimal PricePerNight);
+    public record Room_Data(int Id, string Name, int Capacity, decimal PricePerNight);
 
     public static async Task<IResult> GetRooms(Config config, int hotelId)
     {
-        List<RoomData> result = new();
+        List<Room_Data> result = new();
 
         string query = """
             SELECT id, name, capacity, price_per_night
@@ -110,7 +110,7 @@ static class Hotels
         while (reader.Read())
         {
             result.Add(
-                new RoomData(
+                new(
                     reader.GetInt32(0),
                     reader.GetString(1),
                     reader.GetInt32(2),
@@ -194,8 +194,8 @@ static class Hotels
             AND a.name = @amenity
             GROUP BY hotel.id, hotel.name, hotel.address, city.name, country.name
             ORDER BY hotel.name;
-
             """;
+
         var parameters = new MySqlParameter[] { new("@city_name", city), new("@amenity", amenity) };
 
         using (var reader = await MySqlHelper.ExecuteReaderAsync(config.DB, query, parameters))
