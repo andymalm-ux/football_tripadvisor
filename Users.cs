@@ -1,7 +1,5 @@
 namespace Server;
 
-using MySql.Data.MySqlClient;
-
 class Users
 {
     public record Get_Data(int Id, string Email, string Password);
