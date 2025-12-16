@@ -4,9 +4,9 @@ static class Hotels
 {
     public record Get_Data(int Id, string Name, string Address, string City, string Country);
 
-    public record Room_Data(int Id, string Name, int Capacity, decimal PricePerNight);
+    public record Room_Data(int Id, string Name, int Capacity, string PricePerNight);
 
-    public record Get_Attractions(string Name, string Type, decimal Distance);
+    public record Get_Attractions(string Name, string Type, string Distance);
 
     public record AttractionsByType(List<Get_Attractions> Stadiums, List<Get_Attractions> Pubs);
 
@@ -88,7 +88,7 @@ static class Hotels
                     roomReader.GetInt32(0),
                     roomReader.GetString(1),
                     roomReader.GetInt32(2),
-                    roomReader.GetDecimal(3)
+                    roomReader.GetDecimal(3).ToString() + " SEK"
                 )
             );
         }
@@ -119,7 +119,7 @@ static class Hotels
                 new(
                     attractionReader.GetString(0),
                     attractionReader.GetString(1),
-                    attractionReader.GetDecimal(2)
+                    attractionReader.GetDecimal(2).ToString() + " km"
                 )
             );
         }
@@ -189,7 +189,7 @@ static class Hotels
                     reader.GetInt32(0),
                     reader.GetString(1),
                     reader.GetInt32(2),
-                    reader.GetDecimal(3)
+                    reader.GetDecimal(3).ToString() + " SEK"
                 )
             );
         }
