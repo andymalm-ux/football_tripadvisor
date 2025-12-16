@@ -35,11 +35,23 @@ INSERT INTO hotels (name, address, city_id) VALUES
 ('NH Barcelona Stadium', 'Travessera de les Corts 150-152', 1), 
 ('Arya Stadium Hotel', 'CARRER DE SANTS 383', 1);
 
+
 INSERT INTO tourist_attractions (name, type_id, address, city_id) VALUES
 ('Camp Nou', 1, 'Les Corts' ,1),
 ('Pick Otheo', 2, 'Av de Xile 38', 1),
 ('Futballárium Barcelona', 2, 'Carrer de Benavent 7', 1),
 ('Akihabar BCN', 2, 'Carrer d Eugeni d Ors 5', 1);
+
+INSERT INTO hotel_attraction_distance (hotel_id, attraction_id, distance_km) VALUES
+(1, 1, 0.5),
+(1, 2, 0.6),
+(2, 1, 1.0),
+(2, 3, 0.55),
+(3, 1, 0.9),
+(3, 4, 0.4),
+(4, 1, 0.8),
+(4, 4, 1.3);
+
 
 -- Madrid
 INSERT INTO hotels (name, address, city_id) VALUES
@@ -56,6 +68,16 @@ INSERT INTO tourist_attractions (name, type_id, address, city_id) VALUES
 ('Paddys Irish pub', 2, 'Av de Concha Espina 69', 2),
 ('BB2 TOMACOPAS', 2, 'C del aviador Zorita 49', 2);
 
+INSERT INTO hotel_attraction_distance (hotel_id, attraction_id, distance_km) VALUES
+(5, 6, 0.6),
+(5, 7, 0.09),
+(6, 6, 1.5),
+(6, 8, 0.55),
+(7, 6, 0.3),
+(7, 9, 0.7),
+(8, 6, 1.2),
+(8, 10, 0.6);
+
 -- Sevilla
 INSERT INTO hotels (name, address, city_id) VALUES
 ('Novotel Sevilla', 'Avenida Eduardo Dato 71', 3),
@@ -68,6 +90,16 @@ INSERT INTO tourist_attractions (name, type_id, address, city_id) VALUES
 ('The Wessex Pub', 2, 'Av de la Buhaira 5', 3),
 ('Remember pub', 2, 'C Concejal Francisco Ballesteros 2', 3),
 ('Bocao Bar', 2, 'C Recaredo 14', 3);
+
+INSERT INTO hotel_attraction_distance (hotel_id, attraction_id, distance_km) VALUES
+(9, 11, 0.1),
+(9, 12, 1.0),
+(10, 11, 0.3),
+(10, 13, 0.55),
+(11, 11, 0.75),
+(11, 13, 0.08),
+(12, 11, 1.8),
+(12, 14, 1.2);
 
 -- Valencia
 INSERT INTO hotels (name, address, city_id) VALUES
@@ -82,6 +114,16 @@ INSERT INTO tourist_attractions (name, type_id, address, city_id) VALUES
 ('Hocus Pocus Pub', 2, 'Carrer dels manyans 3', 4),
 ('St Patricks', 2, 'Gran Via del Marqués del túria 69', 4),
 ('Boricua Pub', 2, 'Carrer Serrano Morales 5', 4);
+
+INSERT INTO hotel_attraction_distance (hotel_id, attraction_id, distance_km) VALUES
+(13, 15, 0.7),
+(13, 16, 0.15),
+(14, 15, 1.7),
+(14, 17, 0.2),
+(15, 15, 1.3),
+(15, 18, 0.5),
+(16, 15, 0.75),
+(16, 19, 0.3);
 
 -- England:
 -- London 
@@ -98,6 +140,16 @@ INSERT INTO tourist_attractions (name, type_id, address, city_id) VALUES
 ('The Hunter S', 2, '194 Southgate Rd', 5),
 ('The Bull & Last Pub', 2, 'The Bull & Last', 5);
 
+INSERT INTO hotel_attraction_distance (hotel_id, attraction_id, distance_km) VALUES
+(17, 20, 1.7),
+(17, 21, 1.0),
+(18, 20, 3.6),
+(18, 24, 0.0),
+(19, 20, 3.5),
+(19, 22, 0.2),
+(20, 20, 2.0),
+(20, 23, 0.02);
+
 -- Manchester 
 INSERT INTO hotels (name, address, city_id) VALUES
 ('Hotel Football Old Trafford', '99 Sir Matt Busby Way', 6),
@@ -111,6 +163,16 @@ INSERT INTO tourist_attractions (name, type_id, address, city_id) VALUES
 ('Tollgate', 2, 'Stretford', 6),
 ('Matchstick Man', 2, 'Ugly Bull Rd', 6);
 
+INSERT INTO hotel_attraction_distance (hotel_id, attraction_id, distance_km) VALUES
+(21, 25, 0.02),
+(21, 26, 0.3),
+(22, 25, 0.3),
+(22, 26, 0.3),
+(23, 25, 0.1),
+(23, 27, 0.2),
+(24, 25, 1.7),
+(24, 28, 0.3);
+
 -- Liverpool
 INSERT INTO hotels (name, address, city_id) VALUES
 ('Hotel Tia', '21 Anfield Road', 7),
@@ -121,6 +183,14 @@ INSERT INTO tourist_attractions (name, type_id, address, city_id) VALUES
 ('Anfield', 1, 'Drunken monkey Rd', 7),
 ('The Albert Pub Anfield', 2, 'Slaughter way 4', 7),
 ('The Cabbage Hall Pub', 2, 'The Cabbage Hall Hotel', 7);
+
+INSERT INTO hotel_attraction_distance (hotel_id, attraction_id, distance_km) VALUES
+(25, 29, 0.3),
+(25, 30, 0.3),
+(26, 29, 0.3),
+(26, 30, 0.3),
+(27, 29, 0.9),
+(27, 31, 0.0);
 
 -- Newcastle
 INSERT INTO hotels (name, address, city_id) VALUES
@@ -136,6 +206,16 @@ INSERT INTO tourist_attractions (name, type_id, address, city_id) VALUES
 ('Tickets Bar Newcastle', 2, '43 Neville St', 8),
 ('The Victoria Comet', 2, '19 Neville St', 8);
 
+INSERT INTO hotel_attraction_distance (hotel_id, attraction_id, distance_km) VALUES
+(28, 32, 0.1),
+(28, 35, 0.3),
+(29, 32, 1.0),
+(29, 34, 0.6),
+(30, 32, 0.9),
+(30, 36, 0.4),
+(31, 32, 0.95),
+(31, 36, 0.5);
+
 -- Italy:
 -- Milan
 INSERT INTO hotels (name, address, city_id) VALUES
@@ -149,6 +229,14 @@ INSERT INTO tourist_attractions (name, type_id, address, city_id) VALUES
 ('Green Bar', 2, 'La Prego 4', 9),
 ('Baroon', 2, 'Viale Monte Nero 5', 9);
 
+INSERT INTO hotel_attraction_distance (hotel_id, attraction_id, distance_km) VALUES
+(32, 37, 0.3),
+(32, 38, 0.5),
+(33, 37, 1.4),
+(33, 39, 0.6),
+(34, 37, 2.5),
+(34, 40, 0.7);
+
 -- Rome 
 INSERT INTO hotels (name, address, city_id) VALUES
 ('BeYou Hotel Ponte Milvio', 'Via Cassia 4', 10),
@@ -161,6 +249,14 @@ INSERT INTO tourist_attractions (name, type_id, address, city_id) VALUES
 ('Tree Bar', 2, 'Viale Espresso Machiato 6', 10),
 ('Metropolita', 2, 'Viale Prosciutto di Parma 54', 10);
 
+INSERT INTO hotel_attraction_distance (hotel_id, attraction_id, distance_km) VALUES
+(35, 41, 0.9),
+(35, 42, 0.4),
+(36, 41, 1.5),
+(36, 43, 0.6),
+(37, 41, 0.8),
+(37, 44, 0.5);
+
 -- Naples
 INSERT INTO hotels (name, address, city_id) VALUES
 ('Palazzo Esedra', 'Piazzale Vincenzo Tecchio 50', 11),
@@ -171,6 +267,14 @@ INSERT INTO tourist_attractions (name, type_id, address, city_id) VALUES
 ('Stadio Diego Armando Maradona', 1, 'Piazzale Vincenzo Tecchio', 11),
 ('The Penny Black Pub', 2, 'Via Partenope 29', 11),
 ('Frank Malone Pub', 2, 'Viale Antonio Gramsci 14', 11);
+
+INSERT INTO hotel_attraction_distance (hotel_id, attraction_id, distance_km) VALUES
+(38, 45, 0.2),
+(38, 46, 0.6),
+(39, 45, 0.7),
+(39, 47, 0.5),
+(40, 45, 1.0),
+(40, 46, 0.8);
 
 -- Germany:
 -- Munich
@@ -185,6 +289,14 @@ INSERT INTO tourist_attractions (name, type_id, address, city_id) VALUES
 ('Flemings Beer Lounge', 2, 'Leopoldstraße 130', 12),
 ('Motorworld Bar', 2, 'Am Ausbesserungswerk 8', 12);
 
+INSERT INTO hotel_attraction_distance (hotel_id, attraction_id, distance_km) VALUES
+(41, 48, 5.5),
+(41, 49, 0.7),
+(42, 48, 4.8),
+(42, 50, 0.6),
+(43, 48, 6.0),
+(43, 51, 0.0);
+
 -- Dortmund
 INSERT INTO hotels (name, address, city_id) VALUES
 ('Mercure Hotel Dortmund Messe', 'Strobelallee 41', 13),
@@ -197,6 +309,14 @@ INSERT INTO tourist_attractions (name, type_id, address, city_id) VALUES
 ('Wenkers am Markt', 2, 'Betenstraße 1', 13),
 ('Hovels Hausbrauerei', 2, 'Hoher Wall 5', 13);
 
+INSERT INTO hotel_attraction_distance (hotel_id, attraction_id, distance_km) VALUES
+(44, 52, 0.3),
+(44, 53, 0.1),
+(45, 52, 0.8),
+(45, 54, 0.9),
+(46, 52, 1.7),
+(46, 55, 1.0);
+
 -- Berlin
 INSERT INTO hotels (name, address, city_id) VALUES
 ('Hotel Brandies Berlin', 'Kaiserdamm 27', 14),
@@ -208,6 +328,14 @@ INSERT INTO tourist_attractions (name, type_id, address, city_id) VALUES
 ('The Harp Pub', 2, 'Giesebrechtstraße 15', 14),
 ('Die kleine Kneipe', 2, 'Heerstraße 22', 14),
 ('Brauhaus Südstern', 2, 'Hasenheide 69', 14);
+
+INSERT INTO hotel_attraction_distance (hotel_id, attraction_id, distance_km) VALUES
+(47, 56, 1.8),
+(47, 57, 0.6),
+(48, 56, 2.7),
+(48, 58, 0.4),
+(49, 56, 2.3),
+(49, 59, 1.5);
 
 -- France:
 -- Paris 
@@ -222,6 +350,14 @@ INSERT INTO tourist_attractions (name, type_id, address, city_id) VALUES
 ('Le Parc Lounge Bar', 2, '37 Place René Clair', 15),
 ('Le Moulinsard', 2, '11 Rue Molière', 15);
 
+INSERT INTO hotel_attraction_distance (hotel_id, attraction_id, distance_km) VALUES
+(50, 60, 1.3),
+(50, 61, 0.8),
+(51, 60, 1.1),
+(51, 62, 0.6),
+(52, 60, 0.9),
+(52, 63, 0.4);
+
 -- Marseille
 INSERT INTO hotels (name, address, city_id) VALUES
 ('B&B HOTEL Marseille Prado Parc des Expositions', '192 Avenue Pierre Mendès France', 16),
@@ -234,6 +370,15 @@ INSERT INTO tourist_attractions (name, type_id, address, city_id) VALUES
 ('Bar Le Marseillais', 2, '1 Rue Fort du Sanctuaire', 16),
 ('OBradys Irish Pub', 2, '378 Avenue de Mazargues', 16);
 
+INSERT INTO hotel_attraction_distance (hotel_id, attraction_id, distance_km) VALUES
+(53, 64, 0.7),
+(53, 65, 0.5),
+(54, 64, 3.0),
+(54, 66, 0.8),
+(55, 64, 1.2),
+(55, 67, 0.6);
+
+-- Hotel rooms:
 
 INSERT INTO rooms (hotel_id, name, capacity, price_per_night) VALUES
 -- Hotel 1
@@ -565,6 +710,3 @@ INSERT INTO rooms (hotel_id, name, capacity, price_per_night) VALUES
 (55, 'Superior Room 5502', 2, 1250),
 (55, 'Deluxe Room 5503', 2, 1450),
 (55, 'Premium Room 5504', 2, 1650);
-
--- INSERT INTO hotel_attraction_distance (hotel_id, attraction_id, distance_km) VALUES
--- ("");

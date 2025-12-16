@@ -90,7 +90,7 @@ CREATE TABLE hotel_attraction_distance
     id INT PRIMARY KEY AUTO_INCREMENT,
     hotel_id INT NOT NULL,
     attraction_id INT NOT NULL,
-    distance_km DECIMAL,
+    distance_km DECIMAL(3,2),
     FOREIGN KEY (hotel_id) REFERENCES hotels (id),
     FOREIGN KEY (attraction_id) REFERENCES tourist_attractions (id)
 );
