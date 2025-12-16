@@ -41,6 +41,7 @@ static class Hotels
     public record Get_Single_Hotel(
         string Name,
         int Capacity,
+        string Amenities,
         string Address,
         string City,
         string Country
@@ -51,7 +52,8 @@ static class Hotels
         string query = """
             SELECT 
             hotel.name, 
-            COUNT(room.name) as number_of_rooms,
+            COUNT(room.id) AS number_of_rooms,
+            GROUP_CONCAT(DISTINCT a.name SEPARATOR ', ') AS amenities,
             hotel.address, 
             city.name, 
             country.name 
@@ -59,8 +61,10 @@ static class Hotels
             JOIN cities AS city ON hotel.city_id = city.id
             JOIN countries AS country ON city.country_id = country.id
             LEFT JOIN rooms AS room ON hotel.id = room.hotel_id
+            LEFT JOIN amenities_hotel AS ah ON hotel.id = ah.hotel_id
+            LEFT JOIN amenities AS a ON a.id = ah.amenity_id
             WHERE hotel.id = @id
-            GROUP BY hotel.name, hotel.address, city.name, country.name;
+            GROUP BY hotel.id, hotel.name, hotel.address, city.name, country.name;
             """;
 
         var parameters = new MySqlParameter[] { new("@id", id) };
@@ -74,7 +78,8 @@ static class Hotels
                 reader.GetInt32(1),
                 reader.GetString(2),
                 reader.GetString(3),
-                reader.GetString(4)
+                reader.GetString(4),
+                reader.GetString(5)
             );
 
             return Results.Ok(result);
@@ -133,6 +138,7 @@ static class Hotels
     {
         List<Get_Amenities> result = new();
         string? city = req.Query["city"];
+        string? amenity = req.Query["amenity"];
 
         string query = """
             SELECT
@@ -147,11 +153,12 @@ static class Hotels
             LEFT JOIN amenities_hotel AS ah ON hotel.id = ah.hotel_id
             LEFT JOIN amenities AS a ON a.id = ah.amenity_id
             WHERE city.name = @city_name
+            AND a.name = @amenity
             GROUP BY hotel.name, hotel.address, city.name, country.name
             ORDER BY hotel.name;
 
             """;
-        var parameters = new MySqlParameter[] { new("@city_name", city) };
+        var parameters = new MySqlParameter[] { new("@city_name", city), new("@amenity", amenity) };
 
         using (var reader = await MySqlHelper.ExecuteReaderAsync(config.DB, query, parameters))
         {
