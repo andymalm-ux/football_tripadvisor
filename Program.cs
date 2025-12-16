@@ -43,7 +43,6 @@ app.Run();
 
 async Task reset_DB_to_default(Config config)
 {
-<<<<<<< HEAD
     string create_tables = """
 
         CREATE TABLE users
@@ -86,8 +85,4 @@ async Task reset_DB_to_default(Config config)
     //     await MySqlHelper.ExecuteNonQueryAsync(config.DB, create_table_cities);
     //     await MySqlHelper.ExecuteNonQueryAsync(config.DB, create_table_countries);
     //     await MySqlHelper.ExecuteNonQueryAsync(config.DB, create_table_hotels);
-=======
-    await MySqlHelper.ExecuteNonQueryAsync(config.DB, File.ReadAllText("db/schema.sql"));
-    await MySqlHelper.ExecuteNonQueryAsync(config.DB, File.ReadAllText("db/data.sql"));
->>>>>>> main
 }
