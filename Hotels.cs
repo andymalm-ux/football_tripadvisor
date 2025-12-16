@@ -99,7 +99,7 @@ static class Hotels
             SELECT 
             ta.name as tourist_attraction, 
             at.name as type, 
-            had.distance_km
+            had.distance_km * 1000 AS distance_m
             FROM tourist_attractions AS ta
             JOIN hotel_attraction_distance AS had ON ta.id = had.attraction_id
             JOIN hotels AS h ON h.id = had.hotel_id
@@ -119,7 +119,7 @@ static class Hotels
                 new(
                     attractionReader.GetString(0),
                     attractionReader.GetString(1),
-                    attractionReader.GetDecimal(2).ToString() + " km"
+                    Math.Truncate(attractionReader.GetDecimal(2)).ToString() + " m"
                 )
             );
         }
