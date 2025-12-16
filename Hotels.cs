@@ -47,7 +47,7 @@ static class Hotels
         string Country
     );
 
-    public static async Task<IResult> GetHotelById(int id, Config config)
+    public static async Task<IResult> GetHotelById(int hotelId, Config config)
     {
         string query = """
             SELECT 
@@ -63,11 +63,11 @@ static class Hotels
             LEFT JOIN rooms AS room ON hotel.id = room.hotel_id
             LEFT JOIN amenities_hotel AS ah ON hotel.id = ah.hotel_id
             LEFT JOIN amenities AS a ON a.id = ah.amenity_id
-            WHERE hotel.id = @id
-            GROUP BY hotel.id, hotel.name, hotel.address, city.name, country.name;
+            WHERE hotel.id = @hotel_id
+            GROUP BY hotel.name, hotel.address, city.name, country.name;
             """;
 
-        var parameters = new MySqlParameter[] { new("@id", id) };
+        var parameters = new MySqlParameter[] { new("@hotel_id", hotelId) };
 
         await using var reader = await MySqlHelper.ExecuteReaderAsync(config.DB, query, parameters);
 
@@ -86,8 +86,42 @@ static class Hotels
         }
         else
         {
-            return Results.NotFound(new { message = $"Hotel with ID {id} was not found." });
+            return Results.NotFound(new { message = $"Hotel with ID {hotelId} was not found." });
         }
+    }
+
+    public record RoomData(int Id, string Name, int Capacity, decimal PricePerNight);
+
+    public static async Task<IResult> GetRooms(Config config, int hotelId)
+    {
+        List<RoomData> result = new();
+
+        string query = """
+            SELECT id, name, capacity, price_per_night
+            FROM rooms
+            WHERE hotel_id = @hotel_id
+            """;
+
+        var parameters = new MySqlParameter[] { new("hotel_id", hotelId) };
+
+        using var reader = await MySqlHelper.ExecuteReaderAsync(config.DB, query, parameters);
+
+        while (reader.Read())
+        {
+            result.Add(
+                new RoomData(
+                    reader.GetInt32(0),
+                    reader.GetString(1),
+                    reader.GetInt32(2),
+                    reader.GetDecimal(3)
+                )
+            );
+        }
+        if (result.Count == 0)
+        {
+            return Results.NotFound(new { message = "No rooms found for this hotel..." });
+        }
+        return Results.Ok(result);
     }
 
     public static async Task<IResult> Search(Config config, HttpRequest req)

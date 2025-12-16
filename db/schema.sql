@@ -85,6 +85,7 @@ CREATE TABLE bookings
 (
     id INT PRIMARY KEY AUTO_INCREMENT,
     user_id INT NOT NULL,
+    number_of_guests INT NOT NULL,
     total_cost DECIMAL(9,2),
     FOREIGN KEY (user_id) REFERENCES users(id)
 );

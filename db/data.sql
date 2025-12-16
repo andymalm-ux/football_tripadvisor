@@ -1,3 +1,6 @@
+INSERT INTO users (email, password) VALUES
+('admin', '1234');
+
 INSERT INTO countries (name) VALUES
 ('Spain'),
 ('England'),
