@@ -4,6 +4,26 @@ static class Hotels
 {
     public record Get_Data(int Id, string Name, string Address, string City, string Country);
 
+    public record Room_Data(int Id, string Name, int Capacity, decimal PricePerNight);
+
+    public record Get_Single_Hotel(
+        string Name,
+        int Capacity,
+        string Amenities,
+        string Address,
+        string City,
+        string Country
+    );
+
+    public record Get_Amenities(
+        int Id,
+        string Name,
+        string Address,
+        string City,
+        string Country,
+        string Amenities
+    );
+
     public static async Task<List<Get_Data>> Get(Config config)
     {
         List<Get_Data> result = new();
@@ -38,15 +58,6 @@ static class Hotels
 
         return result;
     }
-
-    public record Get_Single_Hotel(
-        string Name,
-        int Capacity,
-        string Amenities,
-        string Address,
-        string City,
-        string Country
-    );
 
     public static async Task<IResult> GetHotelById(int hotelId, Config config)
     {
@@ -90,8 +101,6 @@ static class Hotels
             return Results.NotFound(new { message = $"Hotel with ID {hotelId} was not found." });
         }
     }
-
-    public record Room_Data(int Id, string Name, int Capacity, decimal PricePerNight);
 
     public static async Task<IResult> GetRooms(Config config, int hotelId)
     {
@@ -161,15 +170,6 @@ static class Hotels
         }
         return Results.Ok(result);
     }
-
-    public record Get_Amenities(
-        int Id,
-        string Name,
-        string Address,
-        string City,
-        string Country,
-        string Amenities
-    );
 
     public static async Task<IResult> Amenities(Config config, HttpRequest req)
     {
