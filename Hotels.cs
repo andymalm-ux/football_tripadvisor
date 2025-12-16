@@ -4,6 +4,26 @@ static class Hotels
 {
     public record Get_Data(int Id, string Name, string Address, string City, string Country);
 
+    public record Room_Data(int Id, string Name, int Capacity, decimal PricePerNight);
+
+    public record Get_Single_Hotel(
+        string Name,
+        string Address,
+        string City,
+        string Country,
+        string Amenities,
+        List<Room_Data> Rooms
+    );
+
+    public record Get_Amenities(
+        int Id,
+        string Name,
+        string Address,
+        string City,
+        string Country,
+        string Amenities
+    );
+
     public static async Task<List<Get_Data>> Get(Config config)
     {
         List<Get_Data> result = new();
@@ -39,25 +59,42 @@ static class Hotels
         return result;
     }
 
-    public record Get_Single_Hotel(
-        string Name,
-        int Capacity,
-        string Amenities,
-        string Address,
-        string City,
-        string Country
-    );
-
     public static async Task<IResult> GetHotelById(int hotelId, Config config)
     {
+        List<Room_Data> rooms = new();
+        var parameters = new MySqlParameter[] { new("@hotel_id", hotelId) };
+
+        string roomQuery = """
+            SELECT id, name, capacity, price_per_night
+            FROM rooms
+            WHERE hotel_id = @hotel_id
+            """;
+
+        await using var roomReader = await MySqlHelper.ExecuteReaderAsync(
+            config.DB,
+            roomQuery,
+            parameters
+        );
+
+        while (roomReader.Read())
+        {
+            rooms.Add(
+                new Room_Data(
+                    roomReader.GetInt32(0),
+                    roomReader.GetString(1),
+                    roomReader.GetInt32(2),
+                    roomReader.GetDecimal(3)
+                )
+            );
+        }
+
         string query = """
             SELECT 
-            hotel.name, 
-            COUNT(DISTINCT room.id) AS number_of_rooms,
-            IFNULL(GROUP_CONCAT(DISTINCT a.name SEPARATOR ', '), "No amenities") AS amenities,
+            hotel.name,
             hotel.address, 
             city.name, 
-            country.name 
+            country.name,
+            IFNULL(GROUP_CONCAT(DISTINCT a.name SEPARATOR ', '), "No amenities") AS amenities
             FROM hotels AS hotel
             JOIN cities AS city ON hotel.city_id = city.id
             JOIN countries AS country ON city.country_id = country.id
@@ -65,10 +102,8 @@ static class Hotels
             LEFT JOIN amenities_hotel AS ah ON hotel.id = ah.hotel_id
             LEFT JOIN amenities AS a ON a.id = ah.amenity_id
             WHERE hotel.id = @hotel_id
-            GROUP BY hotel.name, hotel.address, city.name, country.name;
+            GROUP BY hotel.id;
             """;
-
-        var parameters = new MySqlParameter[] { new("@hotel_id", hotelId) };
 
         await using var reader = await MySqlHelper.ExecuteReaderAsync(config.DB, query, parameters);
 
@@ -76,11 +111,11 @@ static class Hotels
         {
             Get_Single_Hotel result = new(
                 reader.GetString(0),
-                reader.GetInt32(1),
+                reader.GetString(1),
                 reader.GetString(2),
                 reader.GetString(3),
                 reader.GetString(4),
-                reader.GetString(5)
+                rooms
             );
 
             return Results.Ok(result);
@@ -90,8 +125,6 @@ static class Hotels
             return Results.NotFound(new { message = $"Hotel with ID {hotelId} was not found." });
         }
     }
-
-    public record Room_Data(int Id, string Name, int Capacity, decimal PricePerNight);
 
     public static async Task<IResult> GetRooms(Config config, int hotelId)
     {
@@ -161,15 +194,6 @@ static class Hotels
         }
         return Results.Ok(result);
     }
-
-    public record Get_Amenities(
-        int Id,
-        string Name,
-        string Address,
-        string City,
-        string Country,
-        string Amenities
-    );
 
     public static async Task<IResult> Amenities(Config config, HttpRequest req)
     {
