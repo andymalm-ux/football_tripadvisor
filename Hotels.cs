@@ -1,3 +1,5 @@
+using System.Globalization;
+
 namespace Server;
 
 static class Hotels
@@ -27,6 +29,14 @@ static class Hotels
         string City,
         string Country,
         string Amenities
+    );
+
+    public record Hotels_By_Stadium(
+        int Id,
+        string Name,
+        string City,
+        string Country,
+        string Distance
     );
 
     public static async Task<List<Get_Data>> Get(Config config)
@@ -200,7 +210,7 @@ static class Hotels
         return Results.Ok(result);
     }
 
-    public static async Task<IResult> Search(Config config, HttpRequest req)
+    public static async Task<IResult> SearchByCity(Config config, HttpRequest req)
     {
         List<Get_Data> result = new();
         string? city = req.Query["city"];
@@ -285,5 +295,59 @@ static class Hotels
             }
         }
         return Results.Ok(result);
+    }
+
+    public static async Task<IResult> SearchByStadium(Config config, HttpRequest req)
+    {
+        string? stadium = req.Query["stadium"];
+        if (stadium == "" || stadium == null)
+        {
+            return Results.BadRequest(new { message = "You have to search for a stadium" });
+        }
+        List<Hotels_By_Stadium> result = new();
+        TextInfo ti = CultureInfo.CurrentCulture.TextInfo;
+        string query = """
+            SELECT 
+                h.id,
+                h.name,
+                c.name AS city,
+                co.name AS country,
+                ROUND(had.distance_km * 1000) AS distance_m
+            FROM tourist_attractions AS ta
+            JOIN hotel_attraction_distance AS had ON had.attraction_id = ta.id
+            JOIN hotels AS h ON h.id = had.hotel_id
+            JOIN cities AS c ON c.id = h.city_id
+            JOIN countries AS co ON co.id = c.country_id
+            WHERE ta.type_id = 1
+              AND ta.name = @stadium 
+            ORDER BY had.distance_km ASC, h.name ASC;
+            """;
+
+        var parameters = new MySqlParameter[] { new("@stadium", stadium) };
+
+        using var reader = await MySqlHelper.ExecuteReaderAsync(config.DB, query, parameters);
+
+        while (reader.Read())
+        {
+            result.Add(
+                new Hotels_By_Stadium(
+                    reader.GetInt32(0),
+                    reader.GetString(1),
+                    reader.GetString(2),
+                    reader.GetString(3),
+                    reader.GetInt32(4) + " m"
+                )
+            );
+        }
+
+        if (result.Count == 0)
+            return Results.NotFound(
+                new { message = $"No hotels found near {ti.ToTitleCase(stadium)}" }
+            );
+
+        return Results.Json(
+            new { message = $"Hotels near {ti.ToTitleCase(stadium)}", data = result },
+            statusCode: 200
+        );
     }
 }
