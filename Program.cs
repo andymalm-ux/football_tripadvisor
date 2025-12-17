@@ -24,6 +24,8 @@ app.MapGet("/users/", Users.Get);
 app.MapPost("/users/", Users.Post);
 app.MapGet("/users/{id}", Users.GetById);
 
+
+
 app.MapPost("/login/", Login.Post);
 app.MapGet("/login/", Login.Get);
 
@@ -48,10 +50,13 @@ async Task reset_DB_to_default(Config config)
         CREATE TABLE users
         (
         id INT PRIMARY KEY AUTO_INCREMENT,
-        email VARCHAR(264),
-        password VARCHAR(64)
+        email VARCHAR(264) NOT NULL UNIQUE,
+        password VARCHAR(64) NOT NULL,
         role ENUM('user', 'admin') NOT NULL DEFAULT 'user'
         );
+
+        INSERT INTO users (email, password, role)
+        VALUES ('admin', 'admin', 'admin');
 
         CREATE TABLE countries
         (
@@ -75,6 +80,8 @@ async Task reset_DB_to_default(Config config)
         city_id INT,
         FOREIGN KEY (city_id) REFERENCES cities (id)
         );
+
+        
         """;
 
     await MySqlHelper.ExecuteNonQueryAsync(config.DB, "DROP TABLE IF EXISTS users");

@@ -35,21 +35,28 @@ static class Login
 
     public static async Task<IResult> Post(Post_Args credentials, Config config, HttpContext context)
     {
-        string query = "SELECT id FROM users WHERE email = @email AND password = @password";
+        string query = "SELECT id, role FROM users WHERE email = @email AND password = @password";
         var parameters = new MySqlParameter[]
         {
             new("@email", credentials.Email),
             new("@password", credentials.Password),
         };
+        
 
-        object query_result = await MySqlHelper.ExecuteScalarAsync(config.DB, query, parameters);
+        using var reader = await MySqlHelper.ExecuteReaderAsync(config.DB, query, parameters);
 
-        if (query_result is int id)
+        if (!reader.Read())
         {
-            context.Session.SetInt32("user_id", id);
-            return Results.Ok("Login ok");
+            return Results.Text("Fel epost eller lösenord", statusCode: StatusCodes.Status401Unauthorized);
         }
-        return Results.Text("Fel epost eller lösenord", statusCode: StatusCodes.Status401Unauthorized
-        );
+
+        int id = reader.GetInt32("id");
+        string role = reader.GetString("role");
+
+        context.Session.SetInt32("user_id", id);
+        context.Session.SetString("role", role);
+
+        return Results.Ok("Login ok");
     }
 }
+
