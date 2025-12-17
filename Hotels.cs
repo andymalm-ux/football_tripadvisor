@@ -29,7 +29,7 @@ static class Hotels
         string Amenities
     );
 
-    public record Hotels_By_Stadium_Data(
+    public record Hotels_By_Stadium(
         int Id,
         string Name,
         string Address,
@@ -299,12 +299,11 @@ static class Hotels
 
     public static async Task<IResult> GetHotelsByStadium(Config config, HttpRequest req)
     {
-        List<Hotels_By_Stadium_Data> result = new();
-
-        string? stadium = req.Query["name"];
+        string? stadium = req.Query["stadium"];
+        List<Hotels_By_Stadium> result = new();
 
         string query = """
-            SELECT
+            SELECT 
                 h.id,
                 h.name,
                 h.address,
@@ -330,22 +329,20 @@ static class Hotels
         while (reader.Read())
         {
             result.Add(
-                new Hotels_By_Stadium_Data(
+                new Hotels_By_Stadium(
                     reader.GetInt32(0),
                     reader.GetString(1),
                     reader.GetString(2),
                     reader.GetString(3),
                     reader.GetString(4),
                     reader.GetString(5),
-                    reader.GetDecimal(6).ToString("0") + " m"
+                    reader.GetInt32(6) + " m"
                 )
             );
         }
 
         if (result.Count == 0)
-        {
-            return Results.NotFound(new { message = "No hotels found near that stadium." });
-        }
+            return Results.NotFound(new { message = "No hotels found near this stadium" });
 
         return Results.Ok(result);
     }
