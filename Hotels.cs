@@ -242,7 +242,7 @@ static class Hotels
         List<Get_Amenities> result = new();
 
         string? city = req.Query["city"];
-        var amenities = req.Query["amenity"].ToArray(); // max 3
+        var amenities = req.Query["amenity"].ToArray();
 
         string query = """
             SELECT
@@ -263,13 +263,13 @@ static class Hotels
             ORDER BY hotel.name;
             """;
 
-        // var parameters = new MySqlParameter[]
-        // {
-        //     new("@city_name", city),
-        //     new("@a1", amenities.ElementAtOrDefault(0)),
-        //     new("@a2", amenities.ElementAtOrDefault(1)),
-        //     new("@a3", amenities.ElementAtOrDefault(2)),
-        // };
+        var parameters = new MySqlParameter[]
+        {
+            new("@city_name", city),
+            new("@a1", amenities.ElementAtOrDefault(0)),
+            new("@a2", amenities.ElementAtOrDefault(1)),
+            new("@a3", amenities.ElementAtOrDefault(2)),
+        };
 
         using (var reader = await MySqlHelper.ExecuteReaderAsync(config.DB, query, parameters))
         {
