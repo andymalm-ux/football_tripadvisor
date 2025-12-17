@@ -4,7 +4,7 @@ namespace Server;
 
 static class Hotels
 {
-    public record Get_Data(int Id, string Name, string Address, string City, string Country);
+    public record Get_Data(int Id, string Name, string City, string Country);
 
     public record Room_Data(int Id, string Name, int Capacity, string PricePerNight);
 
@@ -47,7 +47,6 @@ static class Hotels
             SELECT 
             hotel.id,
             hotel.name,
-            hotel.address, 
             city.name, 
             country.name
             FROM hotels AS hotel
@@ -64,8 +63,7 @@ static class Hotels
                         reader.GetInt32(0),
                         reader.GetString(1),
                         reader.GetString(2),
-                        reader.GetString(3),
-                        reader.GetString(4)
+                        reader.GetString(3)
                     )
                 );
             }
@@ -216,7 +214,7 @@ static class Hotels
         string? city = req.Query["city"];
 
         string query = """
-            SELECT hotel.id, hotel.name, hotel.address, city.name, country.name
+            SELECT hotel.id, hotel.name, city.name, country.name
             FROM hotels AS hotel
             JOIN cities AS city ON hotel.city_id = city.id
             JOIN countries AS country ON city.country_id = country.id
@@ -234,8 +232,7 @@ static class Hotels
                         reader.GetInt32(0),
                         reader.GetString(1),
                         reader.GetString(2),
-                        reader.GetString(3),
-                        reader.GetString(4)
+                        reader.GetString(3)
                     )
                 );
             }
@@ -304,7 +301,9 @@ static class Hotels
         {
             return Results.BadRequest(new { message = "You have to search for a stadium" });
         }
+
         List<Hotels_By_Stadium> result = new();
+
         TextInfo ti = CultureInfo.CurrentCulture.TextInfo;
         string query = """
             SELECT 
@@ -319,7 +318,7 @@ static class Hotels
             JOIN cities AS c ON c.id = h.city_id
             JOIN countries AS co ON co.id = c.country_id
             WHERE ta.type_id = 1
-              AND ta.name = @stadium 
+            AND ta.name = @stadium 
             ORDER BY had.distance_km ASC, h.name ASC;
             """;
 
