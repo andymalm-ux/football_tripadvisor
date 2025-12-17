@@ -1,3 +1,5 @@
+using System.Globalization;
+
 namespace Server;
 
 static class Hotels
@@ -32,10 +34,8 @@ static class Hotels
     public record Hotels_By_Stadium(
         int Id,
         string Name,
-        string Address,
         string City,
         string Country,
-        string Stadium,
         string Distance
     );
 
@@ -210,7 +210,7 @@ static class Hotels
         return Results.Ok(result);
     }
 
-    public static async Task<IResult> Search(Config config, HttpRequest req)
+    public static async Task<IResult> SearchByCity(Config config, HttpRequest req)
     {
         List<Get_Data> result = new();
         string? city = req.Query["city"];
@@ -297,19 +297,21 @@ static class Hotels
         return Results.Ok(result);
     }
 
-    public static async Task<IResult> GetHotelsByStadium(Config config, HttpRequest req)
+    public static async Task<IResult> SearchByStadium(Config config, HttpRequest req)
     {
         string? stadium = req.Query["stadium"];
+        if (stadium == "" || stadium == null)
+        {
+            return Results.BadRequest(new { message = "You have to search for a stadium" });
+        }
         List<Hotels_By_Stadium> result = new();
-
+        TextInfo ti = CultureInfo.CurrentCulture.TextInfo;
         string query = """
             SELECT 
                 h.id,
                 h.name,
-                h.address,
                 c.name AS city,
                 co.name AS country,
-                ta.name AS stadium,
                 ROUND(had.distance_km * 1000) AS distance_m
             FROM tourist_attractions AS ta
             JOIN hotel_attraction_distance AS had ON had.attraction_id = ta.id
@@ -317,8 +319,7 @@ static class Hotels
             JOIN cities AS c ON c.id = h.city_id
             JOIN countries AS co ON co.id = c.country_id
             WHERE ta.type_id = 1
-              AND REPLACE(LOWER(ta.name), ' ', '')
-                  LIKE CONCAT('%', REPLACE(LOWER(@stadium), ' ', ''), '%')
+              AND ta.name = @stadium 
             ORDER BY had.distance_km ASC, h.name ASC;
             """;
 
@@ -334,16 +335,19 @@ static class Hotels
                     reader.GetString(1),
                     reader.GetString(2),
                     reader.GetString(3),
-                    reader.GetString(4),
-                    reader.GetString(5),
-                    reader.GetInt32(6) + " m"
+                    reader.GetInt32(4) + " m"
                 )
             );
         }
 
         if (result.Count == 0)
-            return Results.NotFound(new { message = "No hotels found near this stadium" });
+            return Results.NotFound(
+                new { message = $"No hotels found near {ti.ToTitleCase(stadium)}" }
+            );
 
-        return Results.Ok(result);
+        return Results.Json(
+            new { message = $"Hotels near {ti.ToTitleCase(stadium)}", data = result },
+            statusCode: 200
+        );
     }
 }
