@@ -248,11 +248,113 @@ static class Hotels
     {
         List<Get_Amenities> result = new();
         string? city = req.Query["city"];
-        string? amenity = req.Query["amenity"];
+        var amenityList = req.Query["amenity"];
 
-        string query = """
+        // Vi kollar först att användaren skrivit in en stad, sen om man skrivit in amenity frågan alls
+        // och sen om man bara skrivit "amenity=" men sen lämnat det tomt
+        if (
+            string.IsNullOrEmpty(city)
+            || amenityList.Count == 0
+            || string.IsNullOrEmpty(amenityList[0])
+        )
+        {
+            return Results.BadRequest(
+                new { message = "City and at least one amenity are required." }
+            );
+        }
+
+        // Skapar en lista för parametrar att skicka data till databasen
+        // Först vilken city och sen hur många amenities användaren skrivit in
+        var parameters = new List<MySqlParameter>
+        {
+            new("@city_name", city),
+            new("@count", amenityList.Count),
+        };
+
+        List<string> amenityPlaceholders = new();
+
+        // Eftersom vi inte vet antalet amenities användaren sökt på,
+        // måste vi sätta unika namn för våra "placeholders" till sql queryn,
+        // sen sparas de likt @a0, @a1 osv.
+        for (int i = 0; i < amenityList.Count; i++)
+        {
+            string name = "@a" + i;
+            amenityPlaceholders.Add(name);
+            parameters.Add(new(name, amenityList[i]));
+        }
+
+        // Sätter ihop alla amenity placeholder namn (@a0, @a1 osv) så de sparas som
+        // en sträng med kommatecken emellan så SQL frågan blir korrekt
+        string amenityParams = string.Join(", ", amenityPlaceholders);
+
+        List<int> matchingHotelIds = new();
+
+        // Query för att hitta id på hotell som matchar staden OCH har alla valda amenities.
+        // HAVING COUNT ser till att hotellet har varje amenity som efterfrågas och inte bara en
+        string searchQuery = $"""
+            SELECT hotel.id
+            FROM hotels AS hotel
+            JOIN cities AS city ON city.id = hotel.city_id
+            JOIN amenities_hotel AS ah ON hotel.id = ah.hotel_id
+            JOIN amenities AS a ON a.id = ah.amenity_id
+            WHERE city.name = @city_name
+            AND a.name IN ({amenityParams})
+            GROUP BY hotel.id
+            HAVING COUNT(DISTINCT a.name) = @count
+            """;
+
+        using (
+            var reader = await MySqlHelper.ExecuteReaderAsync(
+                config.DB,
+                searchQuery,
+                parameters.ToArray()
+            )
+        )
+        {
+            while (reader.Read())
+            {
+                // Sparar alla id till hotell som har alla amenities
+                matchingHotelIds.Add(reader.GetInt32(0));
+            }
+        }
+        // Om listan är tom, hittade vi inga matchande hotels
+        if (matchingHotelIds.Count == 0)
+        {
+            // Kollar om staden finns i databasen
+            string checkCityQuery = "SELECT id FROM cities WHERE name = @city_name LIMIT 1";
+            var cityExists = await MySqlHelper.ExecuteScalarAsync(
+                config.DB,
+                checkCityQuery,
+                parameters[0]
+            );
+
+            if (cityExists == null)
+            {
+                return Results.NotFound(new { message = $"City '{city}' not found." });
+            }
+
+            // Om staden fanns, men inga hotell matchade amenities
+            // gör vi om de amenities man sökt på och till en text med kommatecken emellan
+            // så vi enkelt kan se vad man sökt på i felmeddelandet
+            string searched = string.Join(", ", amenityList!);
+
+            // Vi kollar om listan har mer än en amenity för att skriva ut rätt ord i felmeddelandet
+            string label = amenityList.Count > 1 ? "amenities" : "amenity";
+            return Results.NotFound(
+                new
+                {
+                    message = $"No hotels found in {city} with the requested {label}: {searched}.",
+                }
+            );
+        }
+
+        // Vi gör om listan med matchande hotell id och sparar det i en sträng med kommatecken emellan
+        string matchingIds = string.Join(", ", matchingHotelIds);
+
+        // När vi har alla id som matchar amenities, gör vi en sista query för att få ut den data vi vill visa
+        string query = $"""
             SELECT
-                hotel.Id,
+                hotel.id,
                 hotel.name AS hotel,
                 hotel.address,
                 city.name AS city,
@@ -263,15 +365,12 @@ static class Hotels
             JOIN countries AS country ON country.id = city.country_id
             LEFT JOIN amenities_hotel AS ah ON hotel.id = ah.hotel_id
             LEFT JOIN amenities AS a ON a.id = ah.amenity_id
-            WHERE city.name = @city_name
-            AND a.name = @amenity
-            GROUP BY hotel.id, hotel.name, hotel.address, city.name, country.name
+            WHERE hotel.id IN ({matchingIds})
+            GROUP BY hotel.id
             ORDER BY hotel.name;
             """;
 
-        var parameters = new MySqlParameter[] { new("@city_name", city), new("@amenity", amenity) };
-
-        using (var reader = await MySqlHelper.ExecuteReaderAsync(config.DB, query, parameters))
+        using (var reader = await MySqlHelper.ExecuteReaderAsync(config.DB, query, null))
         {
             while (reader.Read())
             {
@@ -286,11 +385,8 @@ static class Hotels
                     )
                 );
             }
-            if (result.Count == 0)
-            {
-                return Results.NotFound(new { message = $"No hotels found in {city}" });
-            }
         }
+
         return Results.Ok(result);
     }
 
