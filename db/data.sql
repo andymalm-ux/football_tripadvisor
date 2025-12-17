@@ -32,12 +32,11 @@ INSERT INTO attraction_types (name) VALUES
 
 -- Spain: 
 -- Barcelona
-INSERT INTO hotels (name, address, city_id) VALUES
-('Hotel Alguer Camp Nou', 'Passatge Pere Rodriguez 20', 1), 
-('Onefam Les Corts', 'Passatge Regente Mendieta 5', 1),  
-('NH Barcelona Stadium', 'Travessera de les Corts 150-152', 1), 
-('Arya Stadium Hotel', 'CARRER DE SANTS 383', 1);
-
+INSERT INTO hotels (name, address, city_id, check_in_time, check_out_time) VALUES
+('Hotel Alguer Camp Nou', 'Passatge Pere Rodriguez 20', 1, '15:00', '11:00'), 
+('Onefam Les Corts', 'Passatge Regente Mendieta 5', 1, '14:00', '11:00'),  
+('NH Barcelona Stadium', 'Travessera de les Corts 150-152', 1, '15:00', '12:00'), 
+('Arya Stadium Hotel', 'CARRER DE SANTS 383', 1, '16:00', '11:00');
 
 INSERT INTO tourist_attractions (name, type_id, address, city_id) VALUES
 ('Camp Nou', 1, 'Les Corts' ,1),
@@ -57,11 +56,11 @@ INSERT INTO hotel_attraction_distance (hotel_id, attraction_id, distance_km) VAL
 
 
 -- Madrid
-INSERT INTO hotels (name, address, city_id) VALUES
-('H10 Tribeca', 'Pedro Teixeira 5', 2),
-('Melia Castilla', 'Calle del Poeta Joan Maragall 43', 2),
-('NH Paseo de la Habana', 'Paseo de la Habana 73', 2),
-('NYX Hotel Madrid', 'Aviador Zorita 34', 2);
+INSERT INTO hotels (name, address, city_id, check_in_time, check_out_time) VALUES
+('H10 Tribeca', 'Pedro Teixeira 5', 2, '15:00', '12:00'),
+('Melia Castilla', 'Calle del Poeta Joan Maragall 43', 2, '15:00', '12:00'),
+('NH Paseo de la Habana', 'Paseo de la Habana 73', 2, '15:00', '11:00'),
+('NYX Hotel Madrid', 'Aviador Zorita 34', 2, '15:00', '11:00');
 
 INSERT INTO tourist_attractions (name, type_id, address, city_id) VALUES
 ('Metropolitano', 1, 'Av. de Luis Aragonés, 4', 2),
@@ -82,11 +81,11 @@ INSERT INTO hotel_attraction_distance (hotel_id, attraction_id, distance_km) VAL
 (8, 10, 0.6);
 
 -- Sevilla
-INSERT INTO hotels (name, address, city_id) VALUES
-('Novotel Sevilla', 'Avenida Eduardo Dato 71', 3),
-('Meliá Lebreros', 'Luis de Morales 2', 3),
-('Only YOU Hotel Sevilla', 'Avenida Kansas City 7', 3),
-('Hotel Giralda Center', 'Calle Juan de Mata Carriazo 7', 3);
+INSERT INTO hotels (name, address, city_id, check_in_time, check_out_time) VALUES
+('Novotel Sevilla', 'Avenida Eduardo Dato 71', 3, '15:00', '12:00'),
+('Meliá Lebreros', 'Luis de Morales 2', 3, '15:00', '12:00'),
+('Only YOU Hotel Sevilla', 'Avenida Kansas City 7', 3, '15:00', '11:00'),
+('Hotel Giralda Center', 'Calle Juan de Mata Carriazo 7', 3, '14:00', '11:00');
 
 INSERT INTO tourist_attractions (name, type_id, address, city_id) VALUES
 ('Estadio Ramón Sánchez Pizjuán', 1, 'C. Sevilla Fútbol Club', 3),
@@ -105,11 +104,11 @@ INSERT INTO hotel_attraction_distance (hotel_id, attraction_id, distance_km) VAL
 (12, 14, 1.2);
 
 -- Valencia
-INSERT INTO hotels (name, address, city_id) VALUES
-('Silken Puerta Valencia', 'Cardenal Benlloch 28', 4),
-('SH Valencia Palace', 'Placa de Margarita Valldaura 2', 4),
-('Hotel Dimar', 'Gran Via del Marqués del Túria 80', 4),
-('Hospes Palau de la Mar', 'Avenida de Navarro Reverter 14-16', 4);
+INSERT INTO hotels (name, address, city_id, check_in_time, check_out_time) VALUES
+('Silken Puerta Valencia', 'Cardenal Benlloch 28', 4, '15:00', '12:00'),
+('SH Valencia Palace', 'Placa de Margarita Valldaura 2', 4, '16:00', '12:00'),
+('Hotel Dimar', 'Gran Via del Marqués del Túria 80', 4, '15:00', '11:00'),
+('Hospes Palau de la Mar', 'Avenida de Navarro Reverter 14-16', 4, '15:00', '12:00');
 
 INSERT INTO tourist_attractions (name, type_id, address, city_id) VALUES
 ('Mestalla', 1, 'Av de Suécia', 4),
@@ -130,11 +129,11 @@ INSERT INTO hotel_attraction_distance (hotel_id, attraction_id, distance_km) VAL
 
 -- England:
 -- London 
-INSERT INTO hotels (name, address, city_id) VALUES
-('Maldron Hotel Finsbury Park London', '175 Willoughby Lane, Finsbury Park', 5),
-('The Bull & Last', '168 Highgate Road', 5),
-('The Wesley Camden Town', '89 Plender Street', 5),
-('The Luxury Inn', '156 Tottenham Road', 5);
+INSERT INTO hotels (name, address, city_id, check_in_time, check_out_time) VALUES
+('Maldron Hotel Finsbury Park London', '175 Willoughby Lane, Finsbury Park', 5, '15:00', '11:00'),
+('The Bull & Last', '168 Highgate Road', 5, '14:00', '11:00'),
+('The Wesley Camden Town', '89 Plender Street', 5, '15:00', '12:00'),
+('The Luxury Inn', '156 Tottenham Road', 5, '16:00', '11:00');
 
 INSERT INTO tourist_attractions (name, type_id, address, city_id) VALUES
 ('Emirates Stadium', 1, 'Hornsey Rd', 5),
@@ -154,11 +153,11 @@ INSERT INTO hotel_attraction_distance (hotel_id, attraction_id, distance_km) VAL
 (20, 23, 0.02);
 
 -- Manchester 
-INSERT INTO hotels (name, address, city_id) VALUES
-('Hotel Football Old Trafford', '99 Sir Matt Busby Way', 6),
-('Hilton Garden Inn Manchester Emirates Old Trafford', 'Talbot Road', 6),
-('Trafford Hall Hotel Manchester', '23 Talbot Road', 6),
-('Holiday Inn Express Manchester - Salford Quays', 'Waterfront Quay, Salford Quays', 6);
+INSERT INTO hotels (name, address, city_id, check_in_time, check_out_time) VALUES
+('Hotel Football Old Trafford', '99 Sir Matt Busby Way', 6, '15:00', '11:00'),
+('Hilton Garden Inn Manchester Emirates Old Trafford', 'Talbot Road', 6, '15:00', '12:00'),
+('Trafford Hall Hotel Manchester', '23 Talbot Road', 6, '14:00', '11:00'),
+('Holiday Inn Express Manchester - Salford Quays', 'Waterfront Quay, Salford Quays', 6, '15:00', '11:00');
 
 INSERT INTO tourist_attractions (name, type_id, address, city_id) VALUES
 ('Old Trafford', 1, 'Old Trafford', 6),
@@ -177,10 +176,10 @@ INSERT INTO hotel_attraction_distance (hotel_id, attraction_id, distance_km) VAL
 (24, 28, 0.3);
 
 -- Liverpool
-INSERT INTO hotels (name, address, city_id) VALUES
-('Hotel Tia', '21 Anfield Road', 7),
-('Hotel Anfield', '23 Anfield Road', 7),
-('The Cabbage Hall Hotel', '57 Breck Road', 7);
+INSERT INTO hotels (name, address, city_id, check_in_time, check_out_time) VALUES
+('Hotel Tia', '21 Anfield Road', 7, '15:00', '11:00'),
+('Hotel Anfield', '23 Anfield Road', 7, '14:00', '11:00'),
+('The Cabbage Hall Hotel', '57 Breck Road', 7, '15:00', '10:00');
 
 INSERT INTO tourist_attractions (name, type_id, address, city_id) VALUES
 ('Anfield', 1, 'Drunken monkey Rd', 7),
@@ -196,11 +195,11 @@ INSERT INTO hotel_attraction_distance (hotel_id, attraction_id, distance_km) VAL
 (27, 31, 0.0);
 
 -- Newcastle
-INSERT INTO hotels (name, address, city_id) VALUES
-('Sandman Signature Newcastle Hotel', 'Gallowgate', 8),
-('Maldron Hotel Newcastle', 'Newgate Street 17', 8),
-('Royal Station Hotel', 'Neville Street', 8),
-('The County Hotel Newcastle', 'Neville Street 38-42', 8);
+INSERT INTO hotels (name, address, city_id, check_in_time, check_out_time) VALUES
+('Sandman Signature Newcastle Hotel', 'Gallowgate', 8, '15:00', '11:00'),
+('Maldron Hotel Newcastle', 'Newgate Street 17', 8, '15:00', '11:00'),
+('Royal Station Hotel', 'Neville Street', 8, '14:00', '11:00'),
+('The County Hotel Newcastle', 'Neville Street 38-42', 8, '15:00', '12:00');
 
 INSERT INTO tourist_attractions (name, type_id, address, city_id) VALUES
 ('St James Park', 1, 'Beer Way 2', 8),
@@ -221,10 +220,10 @@ INSERT INTO hotel_attraction_distance (hotel_id, attraction_id, distance_km) VAL
 
 -- Italy:
 -- Milan
-INSERT INTO hotels (name, address, city_id) VALUES
-('B&B Hotel Milano San Siro', 'Via Achille 4', 9),
-('Sheraton Milan San Siro', 'Via Caldera 3', 9),
-('Idea Hotel Milano San Siro', 'Via Gaetano Airaghi 125', 9);
+INSERT INTO hotels (name, address, city_id, check_in_time, check_out_time) VALUES
+('B&B Hotel Milano San Siro', 'Via Achille 4', 9, '15:00', '12:00'),
+('Sheraton Milan San Siro', 'Via Caldera 3', 9, '15:00', '12:00'),
+('Idea Hotel Milano San Siro', 'Via Gaetano Airaghi 125', 9, '14:00', '11:00');
 
 INSERT INTO tourist_attractions (name, type_id, address, city_id) VALUES
 ('San Siro', 1, 'Piazzale Angelo Moratti', 9),
@@ -241,10 +240,10 @@ INSERT INTO hotel_attraction_distance (hotel_id, attraction_id, distance_km) VAL
 (34, 40, 0.7);
 
 -- Rome 
-INSERT INTO hotels (name, address, city_id) VALUES
-('BeYou Hotel Ponte Milvio', 'Via Cassia 4', 10),
-('FAIROME Guest House', 'Via Flaminia 305', 10),
-('Suite Pinturicchio', 'Via Pinturicchio 19', 10);
+INSERT INTO hotels (name, address, city_id, check_in_time, check_out_time) VALUES
+('BeYou Hotel Ponte Milvio', 'Via Cassia 4', 10, '15:00', '11:00'),
+('FAIROME Guest House', 'Via Flaminia 305', 10, '14:00', '10:00'),
+('Suite Pinturicchio', 'Via Pinturicchio 19', 10, '15:00', '11:00');
 
 INSERT INTO tourist_attractions (name, type_id, address, city_id) VALUES
 ('Olympic Stadium', 1, 'Viale dello Stadio Olimpico', 10),
@@ -261,10 +260,10 @@ INSERT INTO hotel_attraction_distance (hotel_id, attraction_id, distance_km) VAL
 (37, 44, 0.5);
 
 -- Naples
-INSERT INTO hotels (name, address, city_id) VALUES
-('Palazzo Esedra', 'Piazzale Vincenzo Tecchio 50', 11),
-('LHP Napoli Palace & SPA', 'Viale Augusto 74', 11),
-('Hotel Leopardi', 'Piazza Pilastri 12', 11);
+INSERT INTO hotels (name, address, city_id, check_in_time, check_out_time) VALUES
+('Palazzo Esedra', 'Piazzale Vincenzo Tecchio 50', 11, '15:00', '12:00'),
+('LHP Napoli Palace & SPA', 'Viale Augusto 74', 11, '15:00', '11:00'),
+('Hotel Leopardi', 'Piazza Pilastri 12', 11, '14:00', '11:00');
 
 INSERT INTO tourist_attractions (name, type_id, address, city_id) VALUES
 ('Stadio Diego Armando Maradona', 1, 'Piazzale Vincenzo Tecchio', 11),
@@ -281,10 +280,10 @@ INSERT INTO hotel_attraction_distance (hotel_id, attraction_id, distance_km) VAL
 
 -- Germany:
 -- Munich
-INSERT INTO hotels (name, address, city_id) VALUES
-('Hampton by Hilton Munich City North', 'Ingolstädter Straße 44', 12),
-('B&B Hotel München City-Nord', 'Frankfurter Ring 243', 12),
-('AMERON München Motorworld', 'Am Ausbesserungswerk 8', 12);
+INSERT INTO hotels (name, address, city_id, check_in_time, check_out_time) VALUES
+('Hampton by Hilton Munich City North', 'Ingolstädter Straße 44', 12, '15:00', '12:00'),
+('B&B Hotel München City-Nord', 'Frankfurter Ring 243', 12, '14:00', '11:00'),
+('AMERON München Motorworld', 'Am Ausbesserungswerk 8', 12, '15:00', '11:00');
 
 INSERT INTO tourist_attractions (name, type_id, address, city_id) VALUES
 ('Allianz Arena', 1, 'Werner-Heisenberg-Allee 25', 12),
@@ -301,10 +300,10 @@ INSERT INTO hotel_attraction_distance (hotel_id, attraction_id, distance_km) VAL
 (43, 51, 0.0);
 
 -- Dortmund
-INSERT INTO hotels (name, address, city_id) VALUES
-('Mercure Hotel Dortmund Messe', 'Strobelallee 41', 13),
-('Dorint An den Westfalenhallen Dortmund', 'Lindemannstrasse 88', 13),
-('PLAZA INN Stays Design Dortmund', 'Märkische Straße 73', 13);
+INSERT INTO hotels (name, address, city_id, check_in_time, check_out_time) VALUES
+('Mercure Hotel Dortmund Messe', 'Strobelallee 41', 13, '15:00', '12:00'),
+('Dorint An den Westfalenhallen Dortmund', 'Lindemannstrasse 88', 13, '15:00', '11:00'),
+('PLAZA INN Stays Design Dortmund', 'Märkische Straße 73', 13, '14:00', '11:00');
 
 INSERT INTO tourist_attractions (name, type_id, address, city_id) VALUES
 ('Signal Iduna Park', 1, 'Strobelallee 50', 13),
@@ -321,10 +320,10 @@ INSERT INTO hotel_attraction_distance (hotel_id, attraction_id, distance_km) VAL
 (46, 55, 1.0);
 
 -- Berlin
-INSERT INTO hotels (name, address, city_id) VALUES
-('Hotel Brandies Berlin', 'Kaiserdamm 27', 14),
-('Hotel Rotdorn', 'Heerstraße 36', 14),
-('Enjoy Hotel am Studio', 'Kaiserdamm 80', 14);
+INSERT INTO hotels (name, address, city_id, check_in_time, check_out_time) VALUES
+('Hotel Brandies Berlin', 'Kaiserdamm 27', 14, '15:00', '11:00'),
+('Hotel Rotdorn', 'Heerstraße 36', 14, '14:00', '11:00'),
+('Enjoy Hotel am Studio', 'Kaiserdamm 80', 14, '15:00', '12:00');
 
 INSERT INTO tourist_attractions (name, type_id, address, city_id) VALUES
 ('Olympiastadion Berlin', 1, 'Olympischer Platz 3', 14),
@@ -342,10 +341,10 @@ INSERT INTO hotel_attraction_distance (hotel_id, attraction_id, distance_km) VAL
 
 -- France:
 -- Paris 
-INSERT INTO hotels (name, address, city_id) VALUES
-('Hôtel Botaniste', 'Rue Saint-Serge 5', 15),
-('Hotel De Paris Boulogne', '104 Boulevard de la République, Boulogne-Billancourt', 15),
-('Mercure Paris Boulogne', '37 Place René Clair, Boulogne-Billancourt', 15);
+INSERT INTO hotels (name, address, city_id, check_in_time, check_out_time) VALUES
+('Hôtel Botaniste', 'Rue Saint-Serge 5', 15, '15:00', '12:00'),
+('Hotel De Paris Boulogne', '104 Boulevard de la République, Boulogne-Billancourt', 15, '14:00', '11:00'),
+('Mercure Paris Boulogne', '37 Place René Clair, Boulogne-Billancourt', 15, '15:00', '11:00');
 
 INSERT INTO tourist_attractions (name, type_id, address, city_id) VALUES
 ('Parc des Princes', 1, '24 Rue du Commandant Guilbaud', 15),
@@ -362,10 +361,10 @@ INSERT INTO hotel_attraction_distance (hotel_id, attraction_id, distance_km) VAL
 (52, 63, 0.4);
 
 -- Marseille
-INSERT INTO hotels (name, address, city_id) VALUES
-('B&B HOTEL Marseille Prado Parc des Expositions', '192 Avenue Pierre Mendès France', 16),
-('RockyPop Marseille Hôtel', '4 Boulevard Charles Livon', 16),
-('Comfort Aparthotel Marseille Prado', '23 Rue du Rouet', 16);   
+INSERT INTO hotels (name, address, city_id, check_in_time, check_out_time) VALUES
+('B&B HOTEL Marseille Prado Parc des Expositions', '192 Avenue Pierre Mendès France', 16, '15:00', '10:00'),
+('RockyPop Marseille Hôtel', '4 Boulevard Charles Livon', 16, '15:30', '12:00'),
+('Comfort Aparthotel Marseille Prado', '23 Rue du Rouet', 16, '14:00', '11:00');   
 
 INSERT INTO tourist_attractions (name, type_id, address, city_id) VALUES
 ('Stade Vélodrome', 1, '3 Boulevard Michelet', 16),
