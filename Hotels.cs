@@ -240,8 +240,9 @@ static class Hotels
     public static async Task<IResult> Amenities(Config config, HttpRequest req)
     {
         List<Get_Amenities> result = new();
+
         string? city = req.Query["city"];
-        string? amenity = req.Query["amenity"];
+        var amenities = req.Query["amenity"].ToArray(); // max 3
 
         string query = """
             SELECT
@@ -257,12 +258,18 @@ static class Hotels
             LEFT JOIN amenities_hotel AS ah ON hotel.id = ah.hotel_id
             LEFT JOIN amenities AS a ON a.id = ah.amenity_id
             WHERE city.name = @city_name
-            AND a.name = @amenity
+              AND a.name IN (@a1, @a2, @a3)
             GROUP BY hotel.id, hotel.name, hotel.address, city.name, country.name
             ORDER BY hotel.name;
             """;
 
-        var parameters = new MySqlParameter[] { new("@city_name", city), new("@amenity", amenity) };
+        // var parameters = new MySqlParameter[]
+        // {
+        //     new("@city_name", city),
+        //     new("@a1", amenities.ElementAtOrDefault(0)),
+        //     new("@a2", amenities.ElementAtOrDefault(1)),
+        //     new("@a3", amenities.ElementAtOrDefault(2)),
+        // };
 
         using (var reader = await MySqlHelper.ExecuteReaderAsync(config.DB, query, parameters))
         {
@@ -279,10 +286,10 @@ static class Hotels
                     )
                 );
             }
-            if (result.Count == 0)
-            {
-                return Results.NotFound(new { message = $"No hotels found in {city}" });
-            }
+        }
+        if (result.Count == 0)
+        {
+            return Results.NotFound(new { message = $"No hotels found in {city}" });
         }
         return Results.Ok(result);
     }
