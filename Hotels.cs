@@ -4,6 +4,31 @@ static class Hotels
 {
     public record Get_Data(int Id, string Name, string Address, string City, string Country);
 
+    public record Room_Data(int Id, string Name, int Capacity, string PricePerNight);
+
+    public record Get_Attractions(string Name, string Type, string Distance);
+
+    public record AttractionsByType(List<Get_Attractions> Stadiums, List<Get_Attractions> Pubs);
+
+    public record Get_Single_Hotel(
+        string Name,
+        string Address,
+        string City,
+        string Country,
+        string Amenities,
+        AttractionsByType Attractions,
+        List<Room_Data> Rooms
+    );
+
+    public record Get_Amenities(
+        int Id,
+        string Name,
+        string Address,
+        string City,
+        string Country,
+        string Amenities
+    );
+
     public static async Task<List<Get_Data>> Get(Config config)
     {
         List<Get_Data> result = new();
@@ -39,25 +64,78 @@ static class Hotels
         return result;
     }
 
-    public record Get_Single_Hotel(
-        string Name,
-        int Capacity,
-        string Amenities,
-        string Address,
-        string City,
-        string Country
-    );
-
     public static async Task<IResult> GetHotelById(int hotelId, Config config)
     {
+        List<Room_Data> rooms = new();
+        var parameters = new MySqlParameter[] { new("@hotel_id", hotelId) };
+
+        string roomQuery = """
+            SELECT id, name, capacity, price_per_night
+            FROM rooms
+            WHERE hotel_id = @hotel_id
+            """;
+
+        await using var roomReader = await MySqlHelper.ExecuteReaderAsync(
+            config.DB,
+            roomQuery,
+            parameters
+        );
+
+        while (roomReader.Read())
+        {
+            rooms.Add(
+                new Room_Data(
+                    roomReader.GetInt32(0),
+                    roomReader.GetString(1),
+                    roomReader.GetInt32(2),
+                    roomReader.GetDecimal(3).ToString() + " SEK"
+                )
+            );
+        }
+
+        List<Get_Attractions> attractions = new();
+
+        string attractionsQuery = """
+            SELECT 
+            ta.name as tourist_attraction, 
+            at.name as type, 
+            had.distance_km * 1000 AS distance_m
+            FROM tourist_attractions AS ta
+            JOIN hotel_attraction_distance AS had ON ta.id = had.attraction_id
+            JOIN hotels AS h ON h.id = had.hotel_id
+            JOIN attraction_types AS at ON at.id = ta.type_id
+            WHERE h.id = @hotel_id;
+            """;
+
+        await using var attractionReader = await MySqlHelper.ExecuteReaderAsync(
+            config.DB,
+            attractionsQuery,
+            parameters
+        );
+
+        while (attractionReader.Read())
+        {
+            attractions.Add(
+                new(
+                    attractionReader.GetString(0),
+                    attractionReader.GetString(1),
+                    Math.Truncate(attractionReader.GetDecimal(2)).ToString() + " m"
+                )
+            );
+        }
+
+        AttractionsByType groupedAttractions = new(
+            attractions.FindAll(a => a.Type == "Stadium"),
+            attractions.FindAll(a => a.Type == "Pubs")
+        );
+
         string query = """
             SELECT 
-            hotel.name, 
-            COUNT(room.id) AS number_of_rooms,
-            GROUP_CONCAT(DISTINCT a.name SEPARATOR ', ') AS amenities,
+            hotel.name,
             hotel.address, 
             city.name, 
-            country.name 
+            country.name,
+            IFNULL(GROUP_CONCAT(DISTINCT a.name SEPARATOR ', '), "No amenities") AS amenities
             FROM hotels AS hotel
             JOIN cities AS city ON hotel.city_id = city.id
             JOIN countries AS country ON city.country_id = country.id
@@ -65,10 +143,8 @@ static class Hotels
             LEFT JOIN amenities_hotel AS ah ON hotel.id = ah.hotel_id
             LEFT JOIN amenities AS a ON a.id = ah.amenity_id
             WHERE hotel.id = @hotel_id
-            GROUP BY hotel.name, hotel.address, city.name, country.name;
+            GROUP BY hotel.id;
             """;
-
-        var parameters = new MySqlParameter[] { new("@hotel_id", hotelId) };
 
         await using var reader = await MySqlHelper.ExecuteReaderAsync(config.DB, query, parameters);
 
@@ -76,11 +152,12 @@ static class Hotels
         {
             Get_Single_Hotel result = new(
                 reader.GetString(0),
-                reader.GetInt32(1),
+                reader.GetString(1),
                 reader.GetString(2),
                 reader.GetString(3),
                 reader.GetString(4),
-                reader.GetString(5)
+                groupedAttractions,
+                rooms
             );
 
             return Results.Ok(result);
@@ -91,11 +168,9 @@ static class Hotels
         }
     }
 
-    public record RoomData(int Id, string Name, int Capacity, decimal PricePerNight);
-
     public static async Task<IResult> GetRooms(Config config, int hotelId)
     {
-        List<RoomData> result = new();
+        List<Room_Data> result = new();
 
         string query = """
             SELECT id, name, capacity, price_per_night
@@ -110,11 +185,11 @@ static class Hotels
         while (reader.Read())
         {
             result.Add(
-                new RoomData(
+                new(
                     reader.GetInt32(0),
                     reader.GetString(1),
                     reader.GetInt32(2),
-                    reader.GetDecimal(3)
+                    reader.GetDecimal(3).ToString() + " SEK"
                 )
             );
         }
@@ -162,15 +237,6 @@ static class Hotels
         return Results.Ok(result);
     }
 
-    public record Get_Amenities(
-        int Id,
-        string Name,
-        string Address,
-        string City,
-        string Country,
-        string Amenities
-    );
-
     public static async Task<IResult> Amenities(Config config, HttpRequest req)
     {
         List<Get_Amenities> result = new();
@@ -194,8 +260,8 @@ static class Hotels
             AND a.name = @amenity
             GROUP BY hotel.id, hotel.name, hotel.address, city.name, country.name
             ORDER BY hotel.name;
-
             """;
+
         var parameters = new MySqlParameter[] { new("@city_name", city), new("@amenity", amenity) };
 
         using (var reader = await MySqlHelper.ExecuteReaderAsync(config.DB, query, parameters))
