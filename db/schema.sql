@@ -39,6 +39,8 @@ CREATE TABLE hotels
     name VARCHAR(100) NOT NULL,
     address VARCHAR(100) NOT NULL,
     city_id INT NOT NULL,
+    check_in_time TIME,
+    check_out_time TIME,
     FOREIGN KEY (city_id) REFERENCES cities (id)
 );
 
