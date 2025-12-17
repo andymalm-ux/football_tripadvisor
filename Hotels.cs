@@ -4,7 +4,11 @@ static class Hotels
 {
     public record Get_Data(int Id, string Name, string Address, string City, string Country);
 
-    public record Room_Data(int Id, string Name, int Capacity, decimal PricePerNight);
+    public record Room_Data(int Id, string Name, int Capacity, string PricePerNight);
+
+    public record Get_Attractions(string Name, string Type, string Distance);
+
+    public record AttractionsByType(List<Get_Attractions> Stadiums, List<Get_Attractions> Pubs);
 
     public record Get_Single_Hotel(
         string Name,
@@ -12,6 +16,7 @@ static class Hotels
         string City,
         string Country,
         string Amenities,
+        AttractionsByType Attractions,
         List<Room_Data> Rooms
     );
 
@@ -83,10 +88,46 @@ static class Hotels
                     roomReader.GetInt32(0),
                     roomReader.GetString(1),
                     roomReader.GetInt32(2),
-                    roomReader.GetDecimal(3)
+                    roomReader.GetDecimal(3).ToString() + " SEK"
                 )
             );
         }
+
+        List<Get_Attractions> attractions = new();
+
+        string attractionsQuery = """
+            SELECT 
+            ta.name as tourist_attraction, 
+            at.name as type, 
+            had.distance_km * 1000 AS distance_m
+            FROM tourist_attractions AS ta
+            JOIN hotel_attraction_distance AS had ON ta.id = had.attraction_id
+            JOIN hotels AS h ON h.id = had.hotel_id
+            JOIN attraction_types AS at ON at.id = ta.type_id
+            WHERE h.id = @hotel_id;
+            """;
+
+        await using var attractionReader = await MySqlHelper.ExecuteReaderAsync(
+            config.DB,
+            attractionsQuery,
+            parameters
+        );
+
+        while (attractionReader.Read())
+        {
+            attractions.Add(
+                new(
+                    attractionReader.GetString(0),
+                    attractionReader.GetString(1),
+                    Math.Truncate(attractionReader.GetDecimal(2)).ToString() + " m"
+                )
+            );
+        }
+
+        AttractionsByType groupedAttractions = new(
+            attractions.FindAll(a => a.Type == "Stadium"),
+            attractions.FindAll(a => a.Type == "Pubs")
+        );
 
         string query = """
             SELECT 
@@ -115,6 +156,7 @@ static class Hotels
                 reader.GetString(2),
                 reader.GetString(3),
                 reader.GetString(4),
+                groupedAttractions,
                 rooms
             );
 
@@ -147,7 +189,7 @@ static class Hotels
                     reader.GetInt32(0),
                     reader.GetString(1),
                     reader.GetInt32(2),
-                    reader.GetDecimal(3)
+                    reader.GetDecimal(3).ToString() + " SEK"
                 )
             );
         }
