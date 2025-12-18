@@ -49,7 +49,8 @@ static class Login
         {
             return Results.Text("Fel epost eller lösenord", statusCode: StatusCodes.Status401Unauthorized);
         }
-
+        else 
+        {
         int id = reader.GetInt32("id");
         string role = reader.GetString("role");
 
@@ -57,6 +58,7 @@ static class Login
         context.Session.SetString("role", role);
 
         return Results.Ok("Login ok");
+        }
     }
 }
 
