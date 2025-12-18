@@ -39,7 +39,7 @@ static class Hotels
         string Distance
     );
 
-    public static async Task<List<Get_Data>> Get(Config config)
+    public static async Task<IResult> GetAllHotels(Config config)
     {
         List<Get_Data> result = new();
 
@@ -69,7 +69,7 @@ static class Hotels
             }
         }
 
-        return result;
+        return Results.Ok(result);
     }
 
     public static async Task<IResult> GetHotelById(int hotelId, Config config)
@@ -208,196 +208,48 @@ static class Hotels
         return Results.Ok(result);
     }
 
-    public static async Task<IResult> SearchByCity(Config config, HttpRequest req)
+    public static async Task<IResult> SearchByCity(Config config, string city)
     {
         List<Get_Data> result = new();
-        string? city = req.Query["city"];
 
         string query = """
-            SELECT hotel.id, hotel.name, city.name, country.name
+            SELECT 
+            hotel.id, 
+            hotel.name, 
+            city.name, 
+            country.name
             FROM hotels AS hotel
             JOIN cities AS city ON hotel.city_id = city.id
             JOIN countries AS country ON city.country_id = country.id
-            WHERE city.name = @city_name;
+            WHERE city.name = @city_name
+            ORDER BY hotel.name;
             """;
 
         var parameters = new MySqlParameter[] { new("@city_name", city) };
 
-        using (var reader = await MySqlHelper.ExecuteReaderAsync(config.DB, query, parameters))
-        {
-            while (reader.Read())
-            {
-                result.Add(
-                    new Get_Data(
-                        reader.GetInt32(0),
-                        reader.GetString(1),
-                        reader.GetString(2),
-                        reader.GetString(3)
-                    )
-                );
-            }
-            if (result.Count == 0)
-            {
-                return Results.NotFound(new { message = $"No hotels found in {city}" });
-            }
-        }
-        return Results.Ok(result);
-    }
+        using var reader = await MySqlHelper.ExecuteReaderAsync(config.DB, query, parameters);
 
-    public static async Task<IResult> Amenities(Config config, HttpRequest req)
-    {
-        List<Get_Amenities> result = new();
-        string? city = req.Query["city"];
-        var amenityList = req.Query["amenity"];
-
-        // Vi kollar först att användaren skrivit in en stad, sen om man skrivit in amenity frågan alls
-        // och sen om man bara skrivit "amenity=" men sen lämnat det tomt
-        if (
-            string.IsNullOrEmpty(city)
-            || amenityList.Count == 0
-            || string.IsNullOrEmpty(amenityList[0])
-        )
+        while (reader.Read())
         {
-            return Results.BadRequest(
-                new { message = "City and at least one amenity are required." }
+            result.Add(
+                new Get_Data(
+                    reader.GetInt32(0),
+                    reader.GetString(1),
+                    reader.GetString(2),
+                    reader.GetString(3)
+                )
             );
         }
-
-        // Skapar en lista för parametrar att skicka data till databasen
-        // Först vilken city och sen hur många amenities användaren skrivit in
-        var parameters = new List<MySqlParameter>
+        if (result.Count == 0)
         {
-            new("@city_name", city),
-            new("@count", amenityList.Count),
-        };
-
-        List<string> amenityPlaceholders = new();
-
-        // Eftersom vi inte vet antalet amenities användaren sökt på,
-        // måste vi sätta unika namn för våra "placeholders" till sql queryn,
-        // sen sparas de likt @a0, @a1 osv.
-        for (int i = 0; i < amenityList.Count; i++)
-        {
-            string name = "@a" + i;
-            amenityPlaceholders.Add(name);
-            parameters.Add(new(name, amenityList[i]));
-        }
-
-        // Sätter ihop alla amenity placeholder namn (@a0, @a1 osv) så de sparas som
-        // en sträng med kommatecken emellan så SQL frågan blir korrekt
-        string amenityParams = string.Join(", ", amenityPlaceholders);
-
-        List<int> matchingHotelIds = new();
-
-        // Query för att hitta id på hotell som matchar staden OCH har alla valda amenities.
-        // HAVING COUNT ser till att hotellet har varje amenity som efterfrågas och inte bara en
-        string searchQuery = $"""
-            SELECT hotel.id
-            FROM hotels AS hotel
-            JOIN cities AS city ON city.id = hotel.city_id
-            JOIN amenities_hotel AS ah ON hotel.id = ah.hotel_id
-            JOIN amenities AS a ON a.id = ah.amenity_id
-            WHERE city.name = @city_name
-            AND a.name IN ({amenityParams})
-            GROUP BY hotel.id
-            HAVING COUNT(DISTINCT a.name) = @count
-            """;
-
-        using (
-            var reader = await MySqlHelper.ExecuteReaderAsync(
-                config.DB,
-                searchQuery,
-                parameters.ToArray()
-            )
-        )
-        {
-            while (reader.Read())
-            {
-                // Sparar alla id till hotell som har alla amenities
-                matchingHotelIds.Add(reader.GetInt32(0));
-            }
-        }
-        // Om listan är tom, hittade vi inga matchande hotels
-        if (matchingHotelIds.Count == 0)
-        {
-            // Kollar om staden finns i databasen
-            string checkCityQuery = "SELECT id FROM cities WHERE name = @city_name LIMIT 1";
-            var cityExists = await MySqlHelper.ExecuteScalarAsync(
-                config.DB,
-                checkCityQuery,
-                parameters[0]
-            );
-
-            if (cityExists == null)
-            {
-                return Results.NotFound(new { message = $"City '{city}' not found." });
-            }
-
-            // Om staden fanns, men inga hotell matchade amenities
-            // gör vi om de amenities man sökt på och till en text med kommatecken emellan
-            // så vi enkelt kan se vad man sökt på i felmeddelandet
-            string searched = string.Join(", ", amenityList!);
-
-            // Vi kollar om listan har mer än en amenity för att skriva ut rätt ord i felmeddelandet
-            string label = amenityList.Count > 1 ? "amenities" : "amenity";
-            return Results.NotFound(
-                new
-                {
-                    message = $"No hotels found in {city} with the requested {label}: {searched}.",
-                }
-            );
-        }
-
-        // Vi gör om listan med matchande hotell id och sparar det i en sträng med kommatecken emellan
-        string matchingIds = string.Join(", ", matchingHotelIds);
-
-        // När vi har alla id som matchar amenities, gör vi en sista query för att få ut den data vi vill visa
-        string query = $"""
-            SELECT
-                hotel.id,
-                hotel.name AS hotel,
-                hotel.address,
-                city.name AS city,
-                country.name AS country,
-                GROUP_CONCAT(a.name SEPARATOR ', ') AS amenities
-            FROM hotels AS hotel
-            JOIN cities AS city ON city.id = hotel.city_id
-            JOIN countries AS country ON country.id = city.country_id
-            LEFT JOIN amenities_hotel AS ah ON hotel.id = ah.hotel_id
-            LEFT JOIN amenities AS a ON a.id = ah.amenity_id
-            WHERE hotel.id IN ({matchingIds})
-            GROUP BY hotel.id
-            ORDER BY hotel.name;
-            """;
-
-        using (var reader = await MySqlHelper.ExecuteReaderAsync(config.DB, query, null))
-        {
-            while (reader.Read())
-            {
-                result.Add(
-                    new Get_Amenities(
-                        reader.GetInt32(0),
-                        reader.GetString(1),
-                        reader.GetString(2),
-                        reader.GetString(3),
-                        reader.GetString(4),
-                        reader.GetString(5)
-                    )
-                );
-            }
+            return Results.NotFound(new { message = $"No hotels found in {city}" });
         }
 
         return Results.Ok(result);
     }
 
-    public static async Task<IResult> SearchByStadium(Config config, HttpRequest req)
+    public static async Task<IResult> SearchByStadium(Config config, string stadium)
     {
-        string? stadium = req.Query["stadium"];
-        if (stadium == "" || stadium == null)
-        {
-            return Results.BadRequest(new { message = "You have to search for a stadium" });
-        }
-
         List<Hotels_By_Stadium> result = new();
 
         TextInfo ti = CultureInfo.CurrentCulture.TextInfo;
@@ -444,5 +296,160 @@ static class Hotels
             new { message = $"Hotels near {ti.ToTitleCase(stadium)}", data = result },
             statusCode: 200
         );
+    }
+
+    public static async Task<IResult> SearchByCityAndAmenities(
+        Config config,
+        string? city,
+        string[]? amenity
+    )
+    {
+        // Kontrollerar att både city och amenities finns
+        if (string.IsNullOrWhiteSpace(city) || amenity == null || amenity.Length == 0)
+            return Results.BadRequest(
+                new { message = "City and at least one amenity are required." }
+            );
+
+        // Skapar en sträng av alla val separerade med kommatecken
+        string amenityList = string.Join(",", amenity);
+
+        // Hitta hotell id som har alla amenities som skrevs in
+        string searchQuery = $"""
+            SELECT hotel.id
+            FROM hotels AS hotel
+            JOIN cities AS city ON city.id = hotel.city_id
+            JOIN amenities_hotel AS ah ON hotel.id = ah.hotel_id
+            JOIN amenities AS a ON a.id = ah.amenity_id
+            WHERE city.name = @city_name
+            AND FIND_IN_SET(a.name, @amenity_list)
+            GROUP BY hotel.id
+            HAVING COUNT(DISTINCT a.name) = @count;
+            """;
+
+        var parameters = new[]
+        {
+            new MySqlParameter("@city_name", city),
+            new MySqlParameter("@amenity_list", amenityList),
+            new MySqlParameter("@count", amenity.Length),
+        };
+
+        var matchingIds = new List<int>();
+        using (
+            var reader = await MySqlHelper.ExecuteReaderAsync(config.DB, searchQuery, parameters)
+        )
+        {
+            while (reader.Read())
+                matchingIds.Add(reader.GetInt32(0));
+        }
+
+        // Om inga hotell matchar
+        if (matchingIds.Count == 0)
+        {
+            // Kolla om staden ens finns i databasen
+            string checkCityQuery = "SELECT id FROM cities WHERE name = @city_name LIMIT 1";
+            var cityExists = await MySqlHelper.ExecuteScalarAsync(
+                config.DB,
+                checkCityQuery,
+                new MySqlParameter("@city_name", city)
+            );
+
+            if (cityExists == null)
+                return Results.NotFound(new { message = $"City '{city}' not found." });
+
+            string searched = string.Join(", ", amenity);
+
+            // Vi kollar om listan har mer än en amenity för att skriva ut rätt ord i felmeddelandet
+            string label = amenity.Length > 1 ? "amenities" : "amenity";
+            return Results.NotFound(
+                new
+                {
+                    message = $"No hotels found in {city} with the requested {label}: {searched}.",
+                }
+            );
+        }
+
+        // Hämta detaljer för matchande hotell
+        string hotelIds = string.Join(", ", matchingIds);
+
+        string query = $"""
+            SELECT
+            hotel.id,
+            hotel.name,
+            hotel.address,
+            city.name,
+            country.name,
+            GROUP_CONCAT(a.name SEPARATOR ', ')
+            FROM hotels AS hotel
+            JOIN cities AS city ON city.id = hotel.city_id
+            JOIN countries AS country ON country.id = city.country_id
+            LEFT JOIN amenities_hotel AS ah ON hotel.id = ah.hotel_id
+            LEFT JOIN amenities AS a ON a.id = ah.amenity_id
+            WHERE FIND_IN_SET(hotel.id, @id_list)
+            GROUP BY hotel.id
+            ORDER BY hotel.name;
+            """;
+
+        var sqlParameters = new MySqlParameter[] { new("@id_list", hotelIds) };
+
+        var hotelList = new List<Get_Amenities>();
+        using (var reader = await MySqlHelper.ExecuteReaderAsync(config.DB, query, sqlParameters))
+        {
+            while (reader.Read())
+            {
+                hotelList.Add(
+                    new(
+                        reader.GetInt32(0),
+                        reader.GetString(1),
+                        reader.GetString(2),
+                        reader.GetString(3),
+                        reader.GetString(4),
+                        reader.GetString(5)
+                    )
+                );
+            }
+        }
+
+        return Results.Ok(hotelList);
+    }
+
+    public static async Task<IResult> SearchHotels(
+        Config config,
+        string? city,
+        string? stadium,
+        string[]? amenity
+    )
+    {
+        bool hasCity = !string.IsNullOrWhiteSpace(city);
+        bool hasStadium = !string.IsNullOrWhiteSpace(stadium);
+        bool hasAmenities = amenity != null && amenity.Any(a => !string.IsNullOrWhiteSpace(a));
+
+        // Sök på amenities utan city
+        if (hasAmenities && !hasCity)
+        {
+            return Results.BadRequest(
+                new { message = "Amenities search is only supported together with city" }
+            );
+        }
+
+        //  Sök på stadium
+        if (hasStadium)
+        {
+            return await SearchByStadium(config, stadium!);
+        }
+
+        // Sök på stad + amenities
+        if (hasCity && hasAmenities)
+        {
+            return await SearchByCityAndAmenities(config, city, amenity);
+        }
+
+        // Sök bara på stad
+        if (hasCity)
+        {
+            return await SearchByCity(config, city!);
+        }
+
+        //  Inget filter - returnera alla hotell
+        return await GetAllHotels(config);
     }
 }
