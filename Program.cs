@@ -27,7 +27,6 @@ app.MapGet("/users/{id}", Users.GetById);
 app.MapPost("/login/", Login.Post);
 app.MapGet("/login/", Login.Get);
 
-// Hotels route
 app.MapGet("/hotels", Hotels.GetAllHotels);
 app.MapGet("/hotels/search", Hotels.SearchHotels);
 
@@ -35,6 +34,7 @@ app.MapGet("/hotels/{hotelId}", Hotels.GetHotelById);
 app.MapGet("/hotels/{hotelId}/rooms", Hotels.GetRooms);
 
 app.MapPost("/hotels/{hotelId}/rooms/{roomId}/bookings", Bookings.Post);
+app.MapPost("/hotels/{hotelId}/rooms/{roomId}/price", Bookings.Price);
 
 app.MapGet("/attractions", Attractions.Get);
 

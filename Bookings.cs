@@ -4,6 +4,76 @@ static class Bookings
 {
     public record Post_Booking_Request(DateTime CheckIn, DateTime CheckOut, int NumberOfGuests);
 
+    public static async Task<IResult> Price(
+        Config config,
+        int hotelId,
+        int roomId,
+        Post_Booking_Request credentials
+    )
+    {
+        if (credentials.CheckIn < DateTime.Now)
+        {
+            return Results.Json(
+                new { message = "You must add a check in date that is today or later." },
+                statusCode: 400
+            );
+        }
+        if (credentials.NumberOfGuests <= 0)
+        {
+            return Results.Json(
+                new { message = "Number of guests must be at least 1" },
+                statusCode: 400
+            );
+        }
+
+        string priceQuery = """ 
+            SELECT price_per_night, capacity
+            FROM rooms 
+            WHERE id = @room_id AND hotel_id = @hotel_id
+            """;
+
+        var priceParams = new MySqlParameter[]
+        {
+            new("@room_id", roomId),
+            new("@hotel_id", hotelId),
+        };
+
+        decimal pricePerNight;
+        int roomCapacity;
+
+        using var reader = await MySqlHelper.ExecuteReaderAsync(config.DB, priceQuery, priceParams);
+
+        if (!reader.Read())
+        {
+            return Results.NotFound(new { message = "Room or hotel not found" });
+        }
+
+        pricePerNight = reader.GetDecimal(0);
+        roomCapacity = reader.GetInt32(1);
+
+        if (credentials.NumberOfGuests > roomCapacity)
+        {
+            return Results.Json(
+                new { message = $"Too many guests. Max allowed: {roomCapacity}" },
+                statusCode: 400
+            );
+        }
+
+        TimeSpan period = credentials.CheckOut.Date - credentials.CheckIn.Date;
+        int nights = period.Days;
+
+        if (nights <= 0)
+        {
+            return Results.Json(
+                new { message = "Checkout must be after check in." },
+                statusCode: 400
+            );
+        }
+
+        decimal totalCost = pricePerNight * nights;
+        return Results.Json(new { message = $"Total cost: {Math.Truncate(totalCost)} SEK" });
+    }
+
     public static async Task<IResult> Post(
         Config config,
         HttpContext ctx,
@@ -21,7 +91,6 @@ static class Bookings
                     statusCode: 401
                 );
             }
-
             if (credentials.CheckIn < DateTime.Now)
             {
                 return Results.Json(
@@ -86,7 +155,6 @@ static class Bookings
             }
 
             decimal totalCost = pricePerNight * nights;
-
             string bookingQuery = """
                 INSERT INTO bookings (user_id, number_of_guests, total_cost)
                 VALUES (@user_id, @guests, @total);
