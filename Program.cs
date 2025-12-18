@@ -61,7 +61,9 @@ app.MapGet("/hotels/{hotelId}/rooms", Hotels.GetRooms);
 
 app.MapPost("/hotels/{hotelId}/rooms/{roomId}/bookings", Bookings.Post);
 
-app.MapGet("/search", Hotels.Search);
+app.MapGet("/stadiums/search", Hotels.SearchByStadium);
+app.MapGet("/hotels/search", Hotels.SearchByCity);
+
 app.MapGet("/attractions", Attractions.Get);
 
 app.MapDelete("/db", reset_DB_to_default);
