@@ -31,7 +31,7 @@ app.MapGet(
         if (!Authentication.LoggedIn(context))
         {
             return Results.Text(
-                "Fel epost eller lösenord",
+                "No profile logged in",
                 statusCode: StatusCodes.Status401Unauthorized
             );
         }
@@ -40,7 +40,7 @@ app.MapGet(
 );
 
 app.MapGet(
-    "/user/admin",
+    "/users/admin",
     (HttpContext context) =>
     {
         if (!Authentication.AdminLoggedIn(context))

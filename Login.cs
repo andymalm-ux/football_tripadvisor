@@ -55,15 +55,15 @@ static class Login
                 statusCode: StatusCodes.Status401Unauthorized
             );
         }
-        else 
+        else
         {
-        int id = reader.GetInt32("id");
-        string role = reader.GetString("role");
+            int id = reader.GetInt32("id");
+            string role = reader.GetString("role");
 
-        context.Session.SetInt32("user_id", id);
-        context.Session.SetString("role", role);
+            context.Session.SetInt32("user_id", id);
+            context.Session.SetString("role", role);
 
-        return Results.Ok("Login ok");
+            return Results.Ok("Login ok");
         }
     }
 }
