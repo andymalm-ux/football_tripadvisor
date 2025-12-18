@@ -350,25 +350,27 @@ static class Hotels
             var cityExists = await MySqlHelper.ExecuteScalarAsync(
                 config.DB,
                 checkCityQuery,
-                new MySqlParameter("@city_name", city)
+                parameters[0]
             );
 
             if (cityExists == null)
+            {
                 return Results.NotFound(new { message = $"City '{city}' not found." });
+            }
 
-            string searched = string.Join(", ", amenity);
+            // string searched = string.Join(", ", amenity);
 
             // Vi kollar om listan har mer än en amenity för att skriva ut rätt ord i felmeddelandet
             string label = amenity.Length > 1 ? "amenities" : "amenity";
             return Results.NotFound(
                 new
                 {
-                    message = $"No hotels found in {city} with the requested {label}: {searched}.",
+                    message = $"No hotels found in {city} with the requested {label}: {amenityList}.",
                 }
             );
         }
 
-        // Hämta detaljer för matchande hotell
+        // Hämta hotell id för matchande hotell
         string hotelIds = string.Join(", ", matchingIds);
 
         string query = $"""
@@ -429,6 +431,11 @@ static class Hotels
             return Results.BadRequest(
                 new { message = "Amenities search is only supported together with city" }
             );
+        }
+
+        if (hasStadium && hasCity)
+        {
+            return Results.BadRequest(new { message = "Stadium search is only supported alone" });
         }
 
         //  Sök på stadium
