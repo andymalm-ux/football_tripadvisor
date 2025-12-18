@@ -24,23 +24,32 @@ app.MapGet("/users/", Users.Get);
 app.MapPost("/users/", Users.Post);
 app.MapGet("/users/{id}", Users.GetById);
 
-app.MapGet("/users/profile", (HttpContext context) =>
-{
-    if(!Authentication.LoggedIn(context))
+app.MapGet(
+    "/users/profile",
+    (HttpContext context) =>
     {
-        return Results.Text("Fel epost eller lösenord", statusCode: StatusCodes.Status401Unauthorized);
+        if (!Authentication.LoggedIn(context))
+        {
+            return Results.Text(
+                "Fel epost eller lösenord",
+                statusCode: StatusCodes.Status401Unauthorized
+            );
+        }
+        return Results.Ok("User profile");
     }
-    return Results.Ok("User profile");
-});
+);
 
-app.MapGet("/user/admin", (HttpContext context) =>
-{
-    if (!Authentication.AdminLoggedIn(context))
+app.MapGet(
+    "/user/admin",
+    (HttpContext context) =>
     {
-        return Results.Forbid();
+        if (!Authentication.AdminLoggedIn(context))
+        {
+            return Results.Forbid();
+        }
+        return Results.Ok("Admin page");
     }
-    return Results.Ok("Admin page");
-});
+);
 
 app.MapPost("/login/", Login.Post);
 app.MapGet("/login/", Login.Get);
@@ -94,7 +103,7 @@ async Task reset_DB_to_default(Config config)
         FOREIGN KEY (city_id) REFERENCES cities (id)
         );
 
-        
+
         """;
 
     await MySqlHelper.ExecuteNonQueryAsync(config.DB, "DROP TABLE IF EXISTS users");
