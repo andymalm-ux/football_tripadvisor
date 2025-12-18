@@ -321,7 +321,7 @@ static class Hotels
             JOIN amenities_hotel AS ah ON hotel.id = ah.hotel_id
             JOIN amenities AS a ON a.id = ah.amenity_id
             WHERE city.name = @city_name
-            AND FIND_IN_SET(a.name, @amenity_list)
+            AND a.name IN (@amenity_list) 
             GROUP BY hotel.id
             HAVING COUNT(DISTINCT a.name) = @count;
             """;
@@ -358,8 +358,6 @@ static class Hotels
                 return Results.NotFound(new { message = $"City '{city}' not found." });
             }
 
-            // string searched = string.Join(", ", amenity);
-
             // Vi kollar om listan har mer än en amenity för att skriva ut rätt ord i felmeddelandet
             string label = amenity.Length > 1 ? "amenities" : "amenity";
             return Results.NotFound(
@@ -371,27 +369,27 @@ static class Hotels
         }
 
         // Hämta hotell id för matchande hotell
-        string hotelIds = string.Join(", ", matchingIds);
+        string hotelIds = string.Join(",", matchingIds);
 
-        string query = $"""
+        string query = """
             SELECT
-            hotel.id,
-            hotel.name,
-            hotel.address,
-            city.name,
-            country.name,
-            GROUP_CONCAT(a.name SEPARATOR ', ')
-            FROM hotels AS hotel
-            JOIN cities AS city ON city.id = hotel.city_id
-            JOIN countries AS country ON country.id = city.country_id
-            LEFT JOIN amenities_hotel AS ah ON hotel.id = ah.hotel_id
-            LEFT JOIN amenities AS a ON a.id = ah.amenity_id
-            WHERE FIND_IN_SET(hotel.id, @id_list)
-            GROUP BY hotel.id
-            ORDER BY hotel.name;
+                h.id,
+                h.name,
+                h.address,
+                c.name,
+                co.name,
+                GROUP_CONCAT(a.name SEPARATOR ', ')
+            FROM hotels h
+            JOIN cities c ON c.id = h.city_id
+            JOIN countries co ON co.id = c.country_id
+            LEFT JOIN amenities_hotel ah ON ah.hotel_id = h.id
+            LEFT JOIN amenities a ON a.id = ah.amenity_id
+            WHERE FIND_IN_SET(h.id, @hotel_ids)
+            GROUP BY h.id
+            ORDER BY h.name;
             """;
 
-        var sqlParameters = new MySqlParameter[] { new("@id_list", hotelIds) };
+        var sqlParameters = new MySqlParameter[] { new("@hotel_ids", hotelIds) };
 
         var hotelList = new List<Get_Amenities>();
         using (var reader = await MySqlHelper.ExecuteReaderAsync(config.DB, query, sqlParameters))
