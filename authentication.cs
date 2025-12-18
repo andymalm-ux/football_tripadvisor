@@ -11,5 +11,4 @@ static class Authentication
     {
         return context.Session.GetString("role") == "admin";
     }
-
 }
