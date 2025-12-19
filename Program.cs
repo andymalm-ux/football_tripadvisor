@@ -27,6 +27,33 @@ app.MapGet("/users/{id}", Users.GetById);
 app.MapPost("/login/", Login.Post);
 app.MapGet("/login/", Login.Get);
 
+app.MapGet(
+    "/users/profile",
+    (HttpContext context) =>
+    {
+        if (!Authentication.LoggedIn(context))
+        {
+            return Results.Text(
+                "No profile logged in",
+                statusCode: StatusCodes.Status401Unauthorized
+            );
+        }
+        return Results.Ok("User profile");
+    }
+);
+
+app.MapGet(
+    "/users/admin",
+    (HttpContext context) =>
+    {
+        if (!Authentication.AdminLoggedIn(context))
+        {
+            return Results.Forbid();
+        }
+        return Results.Ok("Admin page");
+    }
+);
+
 app.MapGet("/hotels", Hotels.GetAllHotels);
 app.MapGet("/hotels/search", Hotels.SearchHotels);
 
