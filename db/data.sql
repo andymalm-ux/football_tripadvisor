@@ -2,7 +2,7 @@ INSERT INTO users (email, password, role) VALUES
 ('admin', '1234', 'admin');
 
 INSERT INTO users (email, password, role) VALUES
-('test', 'test', 'users');
+('test', 'test', 'user');
 
 INSERT INTO countries (name) VALUES
 ('Spain'),
