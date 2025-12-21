@@ -14,8 +14,9 @@ DROP TABLE IF EXISTS countries;
 CREATE TABLE users
 (
     id INT PRIMARY KEY AUTO_INCREMENT,
-    email VARCHAR(264) UNIQUE,
-    password VARCHAR(64)
+    email VARCHAR(264) NOT NULL UNIQUE,
+    password VARCHAR(64) NOT NULL,
+    role ENUM('user', 'admin') NOT NULL DEFAULT 'user'
 );
 
 CREATE TABLE countries
